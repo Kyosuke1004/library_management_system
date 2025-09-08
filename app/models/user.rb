@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+  has_many :loans, dependent: :destroy # ユーザーが削除されたときに関連する貸出記録も削除
+  has_many :books, through: :loans # ユーザーが借りた本を取得するための関連付け
 end
