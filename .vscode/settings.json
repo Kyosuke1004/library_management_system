@@ -1,0 +1,30 @@
+{
+  "rubyLsp.enabledFeatures": {
+    "diagnostics": true,
+    "formatting": true,
+    "codeActions": true,
+    "documentSymbols": true,
+    "hover": true,
+    "completion": true,
+    "semanticHighlighting": true,
+    "signatureHelp": true,
+    "typeHierarchy": true,
+    "inlayHint": false,
+    "workspaceSymbol": true
+  },
+  "rubyLsp.formatter": "rubocop",
+  "rubyLsp.linters": ["rubocop"],
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "files.associations": {
+    "*.rb": "ruby",
+    "*.rake": "ruby",
+    "Gemfile": "ruby",
+    "Rakefile": "ruby",
+    "config.ru": "ruby"
+  }
+}
