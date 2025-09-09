@@ -11,7 +11,7 @@ class BookTest < ActiveSupport::TestCase
   end
 end
 
-# 関連付けテスト用の別クラス
+# BookとLoanの関連付けテスト
 class BookAssociationTest < ActiveSupport::TestCase
   def setup
     @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
@@ -36,7 +36,32 @@ class BookAssociationTest < ActiveSupport::TestCase
   end
 end
 
-# available? メソッドテスト用の別クラス
+# 著者関連のテスト
+class BookAuthorAssociationTest < ActiveSupport::TestCase
+  def setup
+    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
+    @author = Author.new(name: 'テスト著者')
+    @book.save!
+    @author.save!
+    @authorship = @book.authorships.create!(author: @author)
+  end
+
+  test 'should have many authorships' do
+    assert_includes @book.authorships, @authorship
+  end
+
+  test 'should have many authors through authorships' do
+    assert_includes @book.authors, @author
+  end
+
+  test 'should destroy associated authorships when book is destroyed' do
+    assert_difference 'Authorship.count', -1 do
+      @book.destroy
+    end
+  end
+end
+
+# available? メソッドテスト
 class BookAvailabilityTest < ActiveSupport::TestCase
   def setup
     @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')

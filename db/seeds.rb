@@ -87,9 +87,25 @@ Loan.create!([
   }
 ])
 
-puts "サンプルデータが作成されました！"
-puts "ユーザー数: #{User.count}"
-puts "本の数: #{Book.count}"
-puts "貸出記録数: #{Loan.count}"
-puts "現在借りられている本: #{Loan.currently_borrowed.count}"
-puts "返却済みの本: #{Loan.returned.count}"
+# Author サンプルデータ
+authors = Author.create!([
+  { name: "Michael Hartl" },
+  { name: "Peter J. Jones" },
+  { name: "Dustin Boswell" },
+  { name: "和田卓人" }
+])
+
+# 既存の本に著者を関連付け
+if Book.exists? && Author.exists?
+  rails_book = Book.find_by(title: "Ruby on Rails チュートリアル")
+  rails_book&.authors << authors[0]
+  
+  ruby_book = Book.find_by(title: "エフェクティブ Ruby")
+  ruby_book&.authors << authors[1]
+  
+  readable_book = Book.find_by(title: "リーダブルコード")
+  readable_book&.authors << authors[2]
+  
+  programmer_book = Book.find_by(title: "プログラマが知るべき97のこと")
+  programmer_book&.authors << authors[3]
+end
