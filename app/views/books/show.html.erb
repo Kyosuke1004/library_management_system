@@ -1,0 +1,31 @@
+<h1>本の詳細</h1>
+
+<dl>
+  <dt>タイトル:</dt>
+  <dd><%= @book.title %></dd>
+  
+  <dt>ISBN:</dt>
+  <dd><%= @book.isbn %></dd>
+  
+  <dt>出版年:</dt>
+  <dd><%= @book.published_year %></dd>
+  
+  <dt>出版社:</dt>
+  <dd><%= @book.publisher %></dd>
+  
+  <dt>著者:</dt>
+  <dd><%= @book.authors.map(&:name).join(', ') %></dd>
+  
+  <dt>貸出状況:</dt>
+  <dd><%= @book.available? ? '貸出可能' : '貸出中' %></dd>
+</dl>
+
+<div>
+  <div>
+  <%= link_to '編集', edit_book_path(@book) %> |
+  <%= link_to '削除', book_path(@book), 
+              data: { turbo_method: :delete, 
+                     turbo_confirm: '本当に削除しますか？' } %> |
+  <%= link_to '戻る', books_path %>
+</div>
+</div>
