@@ -27,7 +27,7 @@ class BooksController < ApplicationController
     if @book.save
       redirect_to @book, notice: '本が正常に作成されました。'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -46,7 +46,7 @@ class BooksController < ApplicationController
     if @book.update(book_params)
       redirect_to @book, notice: '本が正常に更新されました。'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
