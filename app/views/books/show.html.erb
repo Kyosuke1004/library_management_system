@@ -21,6 +21,11 @@
 </dl>
 
 <div>
+  <div>
   <%= link_to '編集', edit_book_path(@book) %> |
+  <%= link_to '削除', book_path(@book), 
+              data: { turbo_method: :delete, 
+                     turbo_confirm: '本当に削除しますか？' } %> |
   <%= link_to '戻る', books_path %>
+</div>
 </div>
