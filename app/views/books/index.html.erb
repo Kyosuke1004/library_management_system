@@ -1,6 +1,7 @@
 <h1>図書一覧</h1>
-<%= link_to '新しい本を登録', new_book_path %>
-
+<% if user_signed_in? %>
+  <%= link_to '新しい本を登録', new_book_path %>
+<% end %>
 <table>
   <thead>
     <tr>
@@ -21,8 +22,10 @@
       <td><%= book.publisher %></td>
       <td><%= book.authors.map(&:name).join(', ') %></td>
       <td>
-        <%= link_to '詳細', book_path(book) %> |
-        <%= link_to '編集', edit_book_path(book) %>
+        <%= link_to '詳細', book_path(book) %>
+        <% if user_signed_in? %>
+          | <%= link_to '編集', edit_book_path(book) %>
+        <% end %>
       </td>
     </tr>
   <% end %>
