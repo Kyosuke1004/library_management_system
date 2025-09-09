@@ -19,16 +19,18 @@ class BooksController < ApplicationController
   def create
     @book = Book.new(book_params)
 
-    if params[:book][:new_author_name].present?
-      author = Author.find_or_create_by(name: params[:book][:new_author_name])
-      @book.authors << author
+    ActiveRecord::Base.transaction do
+      @book.save!
+
+      if params[:book][:new_author_name].present?
+        author = Author.find_or_create_by!(name: params[:book][:new_author_name])
+        @book.authors << author unless @book.authors.include?(author)
+      end
     end
 
-    if @book.save
-      redirect_to @book, notice: '本が正常に作成されました。'
-    else
-      render :new, status: :unprocessable_content
-    end
+    redirect_to @book, notice: '本が正常に作成されました。'
+  rescue ActiveRecord::RecordInvalid
+    render :new, status: :unprocessable_content
   end
 
   def update
