@@ -57,7 +57,7 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
 
   test 'ui shows correct buttons based on loan status and user' do
     # User1が本を借りている状態を作成
-    loan = Loan.create!(user: @user1, book: @book, borrowed_at: 1.day.ago)
+    Loan.create!(user: @user1, book: @book, borrowed_at: 1.day.ago)
 
     # 借りた本人でログイン: 返却ボタンあり
     sign_in @user1
