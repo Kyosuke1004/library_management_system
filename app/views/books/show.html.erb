@@ -1,25 +1,18 @@
 <h1>本の詳細</h1>
-
 <dl>
   <dt>タイトル:</dt>
   <dd><%= @book.title %></dd>
-  
   <dt>ISBN:</dt>
   <dd><%= @book.isbn %></dd>
-  
   <dt>出版年:</dt>
   <dd><%= @book.published_year %></dd>
-  
   <dt>出版社:</dt>
   <dd><%= @book.publisher %></dd>
-  
   <dt>著者:</dt>
   <dd><%= @book.authors.map(&:name).join(', ') %></dd>
-  
   <dt>貸出状況:</dt>
   <dd><%= @book.available? ? '貸出可能' : '貸出中' %></dd>
 </dl>
-
 <div>
   <div>
     <% if user_signed_in? %>
@@ -27,7 +20,15 @@
       <%= link_to '削除', book_path(@book), 
                   data: { turbo_method: :delete, 
                         turbo_confirm: '本当に削除しますか？' } %> |
+      <% if @book.available? %>
+        <%= button_to '貸出', loans_path(book_id: @book.id), method: :post %>
+      <% else %>
+        <% current_loan = @book.loans.currently_borrowed.first %>
+        <% if current_loan&.user == current_user %>
+          <%= button_to '返却', loan_path(current_loan), method: :patch %>
+        <% end %>
+      <% end %>
     <% end %>
     <%= link_to '戻る', books_path %>
-</div>
+  </div>
 </div>

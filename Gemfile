@@ -52,8 +52,9 @@ group :development, :test do
 end
 
 group :development do
-  gem 'irb',                 '1.10.0'
-  gem 'rubocop',             '~> 1.50', require: false
+  gem 'htmlbeautifier', '~> 1.3.0'
+  gem 'irb', '1.10.0'
+  gem 'rubocop', '~> 1.50', require: false
   gem 'rubocop-packaging'
   gem 'rubocop-performance'
   gem 'rubocop-rails', require: false
