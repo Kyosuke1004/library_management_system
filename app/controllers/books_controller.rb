@@ -3,7 +3,13 @@ class BooksController < ApplicationController
   before_action :set_book, only: %i[show edit update destroy]
 
   def index
-    @books = Book.all
+    @books = if params[:search].present?
+               Book.joins(:authors).where('books.title ILIKE ? OR authors.name ILIKE ?',
+                                          "%#{params[:search]}%", "%#{params[:search]}%")
+                   .distinct
+             else
+               Book.all
+             end
   end
 
   def show
