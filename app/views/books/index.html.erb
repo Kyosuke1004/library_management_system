@@ -9,7 +9,7 @@
   <% end %>
 <% end %>
 <% if params[:search].present? %>
-  <p>「<%= params[:search] %>」の検索結果: <%= @books.count %>件</p>
+  <p>「<%= params[:search] %>」の検索結果: <%= @books.size %>件</p>
 <% end %>
 <% if user_signed_in? %>
   <%= link_to '新しい本を登録', new_book_path %>
