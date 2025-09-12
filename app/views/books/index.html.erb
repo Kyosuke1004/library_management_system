@@ -1,4 +1,16 @@
 <h1>図書一覧</h1>
+<%= form_with url: books_path, method: :get, local: true do |f| %>
+  <%= f.text_field :search, 
+      placeholder: 'タイトルまたは著者名で検索',
+      value: params[:search] %>
+  <%= f.submit '検索' %>
+  <% if params[:search].present? %>
+    <%= link_to 'クリア', books_path %>
+  <% end %>
+<% end %>
+<% if params[:search].present? %>
+  <p>「<%= params[:search] %>」の検索結果: <%= @books.size %>件</p>
+<% end %>
 <% if user_signed_in? %>
   <%= link_to '新しい本を登録', new_book_path %>
 <% end %>
@@ -14,20 +26,20 @@
     </tr>
   </thead>
   <tbody>
-  <% @books.each do |book| %>
-    <tr>
-      <td><%= book.title %></td>
-      <td><%= book.isbn %></td>
-      <td><%= book.published_year %></td>
-      <td><%= book.publisher %></td>
-      <td><%= book.authors.map(&:name).join(', ') %></td>
-      <td>
-        <%= link_to '詳細', book_path(book) %>
-        <% if user_signed_in? %>
-          | <%= link_to '編集', edit_book_path(book) %>
-        <% end %>
-      </td>
-    </tr>
-  <% end %>
-</tbody>
+    <% @books.each do |book| %>
+      <tr>
+        <td><%= book.title %></td>
+        <td><%= book.isbn %></td>
+        <td><%= book.published_year %></td>
+        <td><%= book.publisher %></td>
+        <td><%= book.authors.map(&:name).join(', ') %></td>
+        <td>
+          <%= link_to '詳細', book_path(book) %>
+          <% if user_signed_in? %>
+            | <%= link_to '編集', edit_book_path(book) %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>

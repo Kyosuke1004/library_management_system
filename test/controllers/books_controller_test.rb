@@ -10,6 +10,29 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     )
     @author = Author.create!(name: 'テスト著者')
     @user = User.create!(email: 'test@example.com', password: 'password')
+
+    # 検索テスト用データを追加
+    @author_yamada = Author.create!(name: '山田太郎')
+    @author_tanaka = Author.create!(name: '田中花子')
+
+    @ruby_book = Book.create!(
+      title: 'Ruby on Rails入門',
+      isbn: '1111111111',
+      published_year: 2024,
+      publisher: 'プログラミング出版'
+    )
+
+    @java_book = Book.create!(
+      title: 'Java基礎講座',
+      isbn: '2222222222',
+      published_year: 2023,
+      publisher: 'テクノロジー出版'
+    )
+
+    # 関連付け
+    @book.authors << @author # 既存の本にも著者を関連付け
+    @ruby_book.authors << @author_yamada
+    @java_book.authors << @author_tanaka
   end
 
   # Index アクションのテスト
@@ -230,5 +253,40 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   test 'should redirect to login for destroy without authentication' do
     delete book_url(@book)
     assert_redirected_to new_user_session_path
+  end
+
+  # === 検索機能のテスト ===
+  test 'should search books by title' do
+    get books_path, params: { search: 'Ruby' }
+    assert_response :success
+    assert_select 'td', text: 'Ruby on Rails入門'
+    assert_select 'td', text: 'Java基礎講座', count: 0
+  end
+
+  test 'should search books by author name' do
+    get books_path, params: { search: '山田' }
+    assert_response :success
+    assert_select 'td', text: 'Ruby on Rails入門'
+    assert_select 'td', text: 'Java基礎講座', count: 0
+  end
+
+  test 'should search case insensitively' do
+    get books_path, params: { search: 'ruby' }
+    assert_response :success
+    assert_select 'td', text: 'Ruby on Rails入門'
+  end
+
+  test 'should show all books when no search parameter' do
+    get books_path
+    assert_response :success
+    assert_select 'td', text: 'テスト本'
+    assert_select 'td', text: 'Ruby on Rails入門'
+    assert_select 'td', text: 'Java基礎講座'
+  end
+
+  test 'should show search results count' do
+    get books_path, params: { search: '山田' }
+    assert_response :success
+    assert_select 'p', text: '「山田」の検索結果: 1件'
   end
 end
