@@ -4,7 +4,7 @@ class BooksController < ApplicationController
 
   def index
     @books = if params[:search].present?
-               Book.joins(:authors).where('books.title ILIKE ? OR authors.name ILIKE ?',
+               Book.joins(:authors).where('LOWER(books.title) LIKE LOWER(?) OR LOWER(authors.name) LIKE LOWER(?)',
                                           "%#{params[:search]}%", "%#{params[:search]}%")
                    .distinct
              else
