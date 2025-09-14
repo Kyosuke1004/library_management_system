@@ -57,5 +57,11 @@ class BooksController < ApplicationController
     else
       render render_action, status: :unprocessable_content
     end
+  rescue Book::AuthorCreationError => e
+    @book.errors.add(:base, e.message) # エラーメッセージを追加
+    render render_action, status: :unprocessable_content
+  rescue StandardError => e
+    @book.errors.add(:base, "予期しないエラーが発生しました: #{e.message}")
+    render render_action, status: :internal_server_error
   end
 end

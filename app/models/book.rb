@@ -16,7 +16,9 @@ class Book < ApplicationRecord
 
     search_term = "%#{search_term}%"
     joins(:authors)
-      .where('LOWER(books.title) LIKE LOWER(?) OR LOWER(authors.name) LIKE LOWER(?)', search_term, search_term)
+      .where('LOWER(books.title) LIKE LOWER(?) OR LOWER(authors.name) LIKE LOWER(?)',
+             search_term,
+             search_term)
       .distinct
   }
 
@@ -26,10 +28,23 @@ class Book < ApplicationRecord
 
   def assign_authors_by_ids_and_name(author_ids, new_author_name)
     ids = Array(author_ids).compact_blank
+
     if new_author_name.present?
-      author = Author.find_or_create_by!(name: new_author_name.strip)
+      author = find_or_create_author(new_author_name)
       ids << author.id unless ids.include?(author.id)
     end
+
     self.author_ids = ids
+  end
+
+  private
+
+  def find_or_create_author(name)
+    Author.find_or_create_by!(name: name.strip)
+  rescue ActiveRecord::RecordInvalid => e
+    raise AuthorCreationError, "著者「#{name}」の作成に失敗しました: #{e.record.errors.full_messages.join(', ')}"
+  rescue ActiveRecord::RecordNotUnique
+    # 同時リクエストで作成された場合、再取得を試行
+    Author.find_by!(name: name.strip)
   end
 end
