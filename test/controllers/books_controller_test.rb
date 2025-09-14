@@ -2,13 +2,14 @@ require 'test_helper'
 
 class BooksControllerTest < ActionDispatch::IntegrationTest
   def setup
+    @author = Author.create!(name: 'テスト著者')
     @book = Book.create!(
       title: 'テスト本',
       isbn: '1234567890',
       published_year: 2024,
-      publisher: 'テスト出版'
+      publisher: 'テスト出版',
+      authors: [@author]
     )
-    @author = Author.create!(name: 'テスト著者')
     @user = User.create!(email: 'test@example.com', password: 'password')
 
     # 検索テスト用データを追加
@@ -19,20 +20,17 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
       title: 'Ruby on Rails入門',
       isbn: '1111111111',
       published_year: 2024,
-      publisher: 'プログラミング出版'
+      publisher: 'プログラミング出版',
+      authors: [@author_yamada]
     )
 
     @java_book = Book.create!(
       title: 'Java基礎講座',
       isbn: '2222222222',
       published_year: 2023,
-      publisher: 'テクノロジー出版'
+      publisher: 'テクノロジー出版',
+      authors: [@author_tanaka]
     )
-
-    # 関連付け
-    @book.authors << @author # 既存の本にも著者を関連付け
-    @ruby_book.authors << @author_yamada
-    @java_book.authors << @author_tanaka
   end
 
   # Index アクションのテスト

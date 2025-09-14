@@ -20,14 +20,13 @@ end
 class AuthorAssociationTest < ActiveSupport::TestCase
   def setup
     @author = Author.new(name: 'テスト著者')
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
+    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@author])
     @author.save!
     @book.save!
-    @authorship = @author.authorships.create!(book: @book)
   end
 
   test 'should have many authorships' do
-    assert_includes @author.authorships, @authorship
+    assert_includes @author.authorships, @book.authorships.first
   end
 
   test 'should have many books through authorships' do

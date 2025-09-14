@@ -2,8 +2,8 @@
 erDiagram
     users ||--o{ loans : "users.id = loans.user_id"
     books ||--o{ loans : "books.id = loans.book_id"
-    books ||--o{ authorships : "books.id = authorships.book_id"
-    authors ||--o{ authorships : "authors.id = authorships.author_id"
+    books ||--|{ authorships : "books.id = authorships.book_id"
+    authors ||--|{ authorships : "authors.id = authorships.author_id"
     
     users {
         int id PK

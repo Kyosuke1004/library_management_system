@@ -78,8 +78,8 @@ class BooksManagementTest < ActionDispatch::IntegrationTest
     assert_match 'Isbn can&#39;t be blank', response.body
     assert_match 'Published year can&#39;t be blank', response.body
     assert_match 'Publisher can&#39;t be blank', response.body
+    assert_match 'Authors can&#39;t be blank', response.body
 
-    # エラー数の確認（タイポも修正）
-    assert_match '4 errors prohibited this book from being saved', response.body
+    assert_match '5 errors prohibited this book from being saved', response.body
   end
 end

@@ -3,11 +3,13 @@ require 'test_helper'
 class BooksAuthenticationTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create!(email: 'test@example.com', password: 'password')
+    @author = Author.create!(name: 'テスト著者')
     @book = Book.create!(
       title: 'テスト本',
       isbn: '1234567890',
       published_year: 2024,
-      publisher: 'テスト出版'
+      publisher: 'テスト出版',
+      authors: [@author]
     )
   end
 
@@ -60,7 +62,8 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
           title: '新しいテスト本',
           isbn: '9876543210',
           published_year: 2023,
-          publisher: '新テスト出版'
+          publisher: '新テスト出版',
+          author_ids: [@author.id]
         }
       }
     end
@@ -78,7 +81,8 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
         title: '更新されたテスト本',
         isbn: new_book.isbn,
         published_year: new_book.published_year,
-        publisher: new_book.publisher
+        publisher: new_book.publisher,
+        author_ids: [@author.id]
       }
     }
     follow_redirect!

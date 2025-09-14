@@ -2,8 +2,12 @@ require 'test_helper'
 
 class AuthorshipTest < ActiveSupport::TestCase
   def setup
-    @book = Book.create!(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
     @author = Author.create!(name: 'テスト著者')
+    @book = Book.create!(title: 'テスト本',
+                         isbn: '1234567890',
+                         published_year: 2024,
+                         publisher: 'テスト出版',
+                         authors: [@author])
     @authorship = Authorship.new(book: @book, author: @author)
   end
 
