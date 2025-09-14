@@ -41,7 +41,7 @@ class BooksController < ApplicationController
     assign_authors_to_book
 
     if @book.save
-      redirect_to @book, notice: '本の情報が正常に更新されました。'
+      redirect_to @book, notice: '本が正常に更新されました。'
     else
       render :edit, status: :unprocessable_content
     end
