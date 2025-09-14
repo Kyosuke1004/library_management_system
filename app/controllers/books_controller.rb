@@ -18,25 +18,12 @@ class BooksController < ApplicationController
   end
 
   def create
-    @book = Book.new(book_params)
-    assign_authors_to_book
-
-    if @book.save
-      redirect_to @book, notice: '本が正常に作成されました。'
-    else
-      render :new, status: :unprocessable_content
-    end
+    @book = Book.new
+    save_book(:new, '本が正常に作成されました。')
   end
 
   def update
-    @book.assign_attributes(book_params)
-    assign_authors_to_book
-
-    if @book.save
-      redirect_to @book, notice: '本が正常に更新されました。'
-    else
-      render :edit, status: :unprocessable_content
-    end
+    save_book(:edit, '本が正常に更新されました。')
   end
 
   def destroy
@@ -54,12 +41,21 @@ class BooksController < ApplicationController
     params.require(:book).permit(:title, :isbn, :published_year, :publisher, author_ids: [])
   end
 
-  def assign_authors_to_book
-    ids = Array(params[:book][:author_ids]).compact_blank
-    if (name = params[:book][:new_author_name]).present?
-      author = Author.find_or_create_by!(name: name)
-      ids << author.id unless ids.include?(author.id)
+  def author_assignment_params
+    params.require(:book).permit(:new_author_name, author_ids: [])
+  end
+
+  def save_book(render_action, success_message)
+    @book.assign_attributes(book_params)
+    @book.assign_authors_by_ids_and_name(
+      author_assignment_params[:author_ids],
+      author_assignment_params[:new_author_name]
+    )
+
+    if @book.save
+      redirect_to @book, notice: success_message
+    else
+      render render_action, status: :unprocessable_content
     end
-    @book.author_ids = ids
   end
 end

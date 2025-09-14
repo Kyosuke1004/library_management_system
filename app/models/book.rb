@@ -23,4 +23,13 @@ class Book < ApplicationRecord
   def available?
     loans.currently_borrowed.empty?
   end
+
+  def assign_authors_by_ids_and_name(author_ids, new_author_name)
+    ids = Array(author_ids).compact_blank
+    if new_author_name.present?
+      author = Author.find_or_create_by!(name: new_author_name.strip)
+      ids << author.id unless ids.include?(author.id)
+    end
+    self.author_ids = ids
+  end
 end
