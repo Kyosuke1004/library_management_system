@@ -1,23 +1,27 @@
 require 'test_helper'
 
-class BookTest < ActiveSupport::TestCase
+class BookBaseTest < ActiveSupport::TestCase
   def setup
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
+    @user = User.create!(email: 'test@example.com',
+                         password: 'password')
+    @auth = Author.create!(name: 'テスト著者')
+    @book = Book.create!(title: 'テスト本',
+                         isbn: '1234567890',
+                         published_year: 2024,
+                         publisher: 'テスト出版',
+                         authors: [@auth])
   end
+end
 
-  # バリデーションテスト
+class BookTest < BookBaseTest
   test 'should be valid' do
     assert @book.valid?
   end
 end
 
-# BookとLoanの関連付けテスト
-class BookAssociationTest < ActiveSupport::TestCase
+class BookAssociationTest < BookBaseTest
   def setup
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
-    @user = User.new(email: 'test@example.com', password: 'password')
-    @book.save!
-    @user.save!
+    super
     @loan = @book.loans.create!(user: @user, borrowed_at: Time.current)
   end
 
@@ -36,22 +40,13 @@ class BookAssociationTest < ActiveSupport::TestCase
   end
 end
 
-# 著者関連のテスト
-class BookAuthorAssociationTest < ActiveSupport::TestCase
-  def setup
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
-    @author = Author.new(name: 'テスト著者')
-    @book.save!
-    @author.save!
-    @authorship = @book.authorships.create!(author: @author)
-  end
-
+class BookAuthorAssociationTest < BookBaseTest
   test 'should have many authorships' do
-    assert_includes @book.authorships, @authorship
+    assert @book.authorships.any?
   end
 
   test 'should have many authors through authorships' do
-    assert_includes @book.authors, @author
+    assert_includes @book.authors, @auth
   end
 
   test 'should destroy associated authorships when book is destroyed' do
@@ -61,15 +56,7 @@ class BookAuthorAssociationTest < ActiveSupport::TestCase
   end
 end
 
-# available? メソッドテスト
-class BookAvailabilityTest < ActiveSupport::TestCase
-  def setup
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
-    @user = User.new(email: 'test@example.com', password: 'password')
-    @book.save!
-    @user.save!
-  end
-
+class BookAvailabilityTest < BookBaseTest
   test 'available? should return true when no current loans' do
     assert @book.available?
   end

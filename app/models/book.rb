@@ -9,6 +9,7 @@ class Book < ApplicationRecord
   validates :isbn, presence: true
   validates :published_year, presence: true
   validates :publisher, presence: true
+  validates :authors, presence: true
 
   def available?
     loans.currently_borrowed.empty?

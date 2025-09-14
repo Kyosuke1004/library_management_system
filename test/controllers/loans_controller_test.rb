@@ -3,11 +3,13 @@ require 'test_helper'
 class LoansControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create!(email: 'test@example.com', password: 'password')
+    @author = Author.create!(name: 'テスト著者')
     @book = Book.create!(
       title: 'テスト本',
       isbn: '1234567890',
       published_year: 2024,
-      publisher: 'テスト出版'
+      publisher: 'テスト出版',
+      authors: [@author]
     )
   end
 

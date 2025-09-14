@@ -19,11 +19,15 @@ end
 # 関連付けテスト用の別クラス
 class AuthorAssociationTest < ActiveSupport::TestCase
   def setup
-    @author = Author.new(name: 'テスト著者')
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
-    @author.save!
-    @book.save!
-    @authorship = @author.authorships.create!(book: @book)
+    @author = Author.create!(name: 'テスト著者')
+    @book = Book.create!(
+      title: 'テスト本',
+      isbn: '1234567890',
+      published_year: 2024,
+      publisher: 'テスト出版',
+      authors: [@author]
+    )
+    @authorship = @book.authorships.first
   end
 
   test 'should have many authorships' do

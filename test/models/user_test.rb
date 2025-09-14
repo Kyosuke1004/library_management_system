@@ -1,12 +1,13 @@
 require 'test_helper'
 
-class UserTest < ActiveSupport::TestCase
+class UserBaseTest < ActiveSupport::TestCase
   def setup
     @user = User.new(email: 'user@example.com',
                      password: 'foobar', password_confirmation: 'foobar')
   end
+end
 
-  # バリデーションテスト
+class UserTest < UserBaseTest
   test 'should be valid' do
     assert @user.valid?
   end
@@ -38,12 +39,11 @@ class UserTest < ActiveSupport::TestCase
   end
 end
 
-# 関連付けテスト用の別クラス
-class UserAssociationTest < ActiveSupport::TestCase
+class UserAssociationTest < UserBaseTest
   def setup
-    @user = User.new(email: 'user@example.com',
-                     password: 'foobar', password_confirmation: 'foobar')
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版')
+    super
+    @auth = Author.create!(name: 'テスト著者')
+    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@auth])
     @user.save!
     @book.save!
     @loan = @user.loans.create!(book: @book, borrowed_at: Time.current)

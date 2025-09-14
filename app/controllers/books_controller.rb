@@ -27,34 +27,20 @@ class BooksController < ApplicationController
 
   def create
     @book = Book.new(book_params)
+    assign_authors_to_book
 
-    ActiveRecord::Base.transaction do
-      @book.save!
-
-      if params[:book][:new_author_name].present?
-        author = Author.find_or_create_by!(name: params[:book][:new_author_name])
-        @book.authors << author unless @book.authors.include?(author)
-      end
+    if @book.save
+      redirect_to @book, notice: '本が正常に作成されました。'
+    else
+      render :new, status: :unprocessable_content
     end
-
-    redirect_to @book, notice: '本が正常に作成されました。'
-  rescue ActiveRecord::RecordInvalid
-    render :new, status: :unprocessable_content
   end
 
   def update
-    if params[:book][:new_author_name].present?
-      author = Author.find_or_create_by(name: params[:book][:new_author_name])
+    @book.assign_attributes(book_params)
+    assign_authors_to_book
 
-      # 既存の著者IDリストに新しい著者のIDを追加
-      author_ids = Array(params[:book][:author_ids]).reject(&:blank?)
-      author_ids << author.id.to_s unless author_ids.include?(author.id.to_s)
-
-      # paramsを更新
-      params[:book][:author_ids] = author_ids
-    end
-
-    if @book.update(book_params)
+    if @book.save
       redirect_to @book, notice: '本が正常に更新されました。'
     else
       render :edit, status: :unprocessable_content
@@ -74,5 +60,14 @@ class BooksController < ApplicationController
 
   def book_params
     params.require(:book).permit(:title, :isbn, :published_year, :publisher, author_ids: [])
+  end
+
+  def assign_authors_to_book
+    ids = Array(params[:book][:author_ids]).compact_blank
+    if (name = params[:book][:new_author_name]).present?
+      author = Author.find_or_create_by!(name: name)
+      ids << author.id unless ids.include?(author.id)
+    end
+    @book.author_ids = ids
   end
 end
