@@ -43,27 +43,19 @@ class BooksController < ApplicationController
   end
 
   def update
-    ActiveRecord::Base.transaction do
-      @book.assign_attributes(book_params)
-
-      ids = Array(params[:book][:author_ids]).reject(&:blank?)
-      if (name = params[:book][:new_author_name]).present?
-        author = Author.find_or_create_by!(name: name)
-        ids |= [author.id]
-      end
-
-      if ids.empty?
-        @book.errors.add(:authors, :blank)
-        raise ActiveRecord::RecordInvalid, @book
-      end
-
-      @book.author_ids = ids
-      @book.save!
+    ids = Array(params[:book][:author_ids]).reject(&:blank?)
+    if (name = params[:book][:new_author_name]).present?
+      author = Author.find_or_create_by!(name: name)
+      # createと同じロジックに統一
+      ids << author.id unless ids.include?(author.id)
     end
+    @book.author_ids = ids
 
-    redirect_to @book, notice: '本が正常に更新されました。'
-  rescue ActiveRecord::RecordInvalid
-    render :edit, status: :unprocessable_content
+    if @book.update(book_params)
+      redirect_to @book, notice: '本の情報が正常に更新されました。'
+    else
+      render :edit, status: :unprocessable_content
+    end
   end
 
   def destroy

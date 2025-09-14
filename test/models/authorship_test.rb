@@ -8,7 +8,7 @@ class AuthorshipTest < ActiveSupport::TestCase
                          published_year: 2024,
                          publisher: 'テスト出版',
                          authors: [@author])
-    @authorship = Authorship.new(book: @book, author: @author)
+    @authorship = Authorship.find_by(author: @author, book: @book)
   end
 
   test 'should be valid' do
