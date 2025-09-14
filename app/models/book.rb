@@ -11,6 +11,15 @@ class Book < ApplicationRecord
   validates :publisher, presence: true
   validates :authors, presence: true
 
+  scope :search_by_title_or_author, lambda { |search_term|
+    return all if search_term.blank?
+
+    search_term = "%#{search_term}%"
+    joins(:authors)
+      .where('LOWER(books.title) LIKE LOWER(?) OR LOWER(authors.name) LIKE LOWER(?)', search_term, search_term)
+      .distinct
+  }
+
   def available?
     loans.currently_borrowed.empty?
   end
