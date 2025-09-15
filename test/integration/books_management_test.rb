@@ -45,7 +45,7 @@ class BooksManagementTest < ActionDispatch::IntegrationTest
           published_year: book.published_year,
           publisher: book.publisher,
           author_ids: [@author.id],
-          new_author_name: '新しい著者'
+          new_author_names: ['新しい著者']
         }
       }
     end

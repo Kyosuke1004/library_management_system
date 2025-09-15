@@ -42,14 +42,14 @@ class BooksController < ApplicationController
   end
 
   def author_assignment_params
-    params.require(:book).permit(:new_author_name, author_ids: [])
+    params.require(:book).permit(:new_author_names, author_ids: [], new_author_names: [])
   end
 
   def save_book(render_action, success_message)
     @book.assign_attributes(book_params)
-    @book.assign_authors_by_ids_and_name(
+    @book.assign_authors_by_ids_and_names(
       author_assignment_params[:author_ids],
-      author_assignment_params[:new_author_name]
+      author_assignment_params[:new_author_names]
     )
 
     if @book.save
