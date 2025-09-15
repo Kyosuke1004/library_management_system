@@ -1,5 +1,4 @@
 <h1>本を編集</h1>
-
 <%= form_with model: @book do |form| %>
   <% if @book.errors.any? %>
     <div id="error_explanation">
@@ -11,27 +10,22 @@
       </ul>
     </div>
   <% end %>
-
   <div class="field">
     <%= form.label :title %>
     <%= form.text_field :title %>
   </div>
-
   <div class="field">
     <%= form.label :isbn %>
     <%= form.text_field :isbn %>
   </div>
-
   <div class="field">
     <%= form.label :published_year %>
     <%= form.number_field :published_year %>
   </div>
-
   <div class="field">
     <%= form.label :publisher %>
     <%= form.text_field :publisher %>
   </div>
-
   <div class="field">
     <%= form.label :author_ids, "著者を選択" %>
     <%= form.collection_check_boxes :author_ids, Author.all, :id, :name do |b| %>
@@ -41,16 +35,13 @@
       </div>
     <% end %>
   </div>
-
   <div class="field">
-    <%= form.label :new_author_name, "または新しい著者名を入力" %>
-    <%= form.text_field :new_author_name %>
+    <%= form.label :new_author_names, "新しい著者名を入力（カンマ区切りで複数可）" %>
+    <%= form.text_area :new_author_names, placeholder: "新しい著者名を入力" %>
   </div>
-
   <div class="actions">
     <%= form.submit %>
   </div>
 <% end %>
-
 <%= link_to '詳細', @book %> |
 <%= link_to '戻る', books_path %>

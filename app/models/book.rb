@@ -26,11 +26,19 @@ class Book < ApplicationRecord
     loans.currently_borrowed.empty?
   end
 
-  def assign_authors_by_ids_and_name(author_ids, new_author_name)
-    ids = Array(author_ids).compact_blank
+  class AuthorCreationError < StandardError; end
 
-    if new_author_name.present?
-      author = find_or_create_author(new_author_name)
+  def assign_authors_by_ids_and_names(author_ids, new_author_names)
+    ids = Array(author_ids).compact_blank.map(&:to_i)
+
+    # デバッグ用: new_author_namesの内容を確認
+    Rails.logger.debug { "New Author Names: #{new_author_names.inspect}" }
+
+    normalize_author_names(new_author_names).each do |name|
+      # デバッグ用: 各著者名を確認
+      Rails.logger.debug { "Processing Author Name: #{name.inspect}" }
+
+      author = find_or_create_author(name)
       ids << author.id unless ids.include?(author.id)
     end
 
@@ -39,12 +47,24 @@ class Book < ApplicationRecord
 
   private
 
+  def normalize_author_names(names)
+    raw =
+      case names
+      when String
+        names.split(/[,\n]/)
+      else
+        Array(names)
+      end
+
+    raw.map { |n| n.to_s.strip }.compact_blank.uniq
+  end
+
   def find_or_create_author(name)
-    Author.find_or_create_by!(name: name.strip)
+    Author.find_or_create_by!(name: name)
   rescue ActiveRecord::RecordInvalid => e
     raise AuthorCreationError, "著者「#{name}」の作成に失敗しました: #{e.record.errors.full_messages.join(', ')}"
   rescue ActiveRecord::RecordNotUnique
     # 同時リクエストで作成された場合、再取得を試行
-    Author.find_by!(name: name.strip)
+    Author.find_by!(name: name)
   end
 end

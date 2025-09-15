@@ -82,7 +82,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
           isbn: '9876543210',
           published_year: 2023,
           publisher: '新出版社',
-          new_author_name: '新著者'
+          new_author_names: ['新著者']
         }
       }
     end
@@ -105,6 +105,27 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_equal 2, Book.last.authors.count
+  end
+
+  # 複数の新しい著者を登録するテスト
+  test 'should create book with multiple new authors' do
+    sign_in @user
+    assert_difference('Book.count', 1) do
+      assert_difference('Author.count', 2) do
+        post books_url, params: {
+          book: {
+            title: '新しい本',
+            isbn: '9876543210',
+            published_year: 2023,
+            publisher: '新出版社',
+            new_author_names: %w[新著者A 新著者B]
+          }
+        }
+      end
+    end
+    assert_redirected_to book_url(Book.last)
+    assert_includes Book.last.authors.map(&:name), '新著者A'
+    assert_includes Book.last.authors.map(&:name), '新著者B'
   end
 
   # Edit アクションのテスト
@@ -142,7 +163,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
           published_year: @book.published_year,
           publisher: @book.publisher,
           author_ids: [@author.id],
-          new_author_name: '追加著者'
+          new_author_names: ['追加著者']
         }
       }
     end
