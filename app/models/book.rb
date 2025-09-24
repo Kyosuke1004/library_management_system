@@ -11,6 +11,10 @@ class Book < ApplicationRecord
   validates :publisher, presence: true
   validates :authors, presence: true
 
+  attr_accessor :new_author_names
+
+  before_validation :assign_authors_from_params
+
   scope :search_by_title_or_author, lambda { |search_term|
     return all if search_term.blank?
 
@@ -28,33 +32,39 @@ class Book < ApplicationRecord
 
   class AuthorCreationError < StandardError; end
 
-  def assign_authors_by_ids_and_names(author_ids, new_author_names)
-    ids = Array(author_ids).compact_blank.map(&:to_i)
-
-    # デバッグ用: new_author_namesの内容を確認
-    Rails.logger.debug { "New Author Names: #{new_author_names.inspect}" }
-
-    normalize_author_names(new_author_names).each do |name|
-      # デバッグ用: 各著者名を確認
-      Rails.logger.debug { "Processing Author Name: #{name.inspect}" }
-
-      author = find_or_create_author(name)
-      ids << author.id unless ids.include?(author.id)
-    end
-
-    self.author_ids = ids
-  end
-
   private
 
+  def assign_authors_from_params
+    self.author_ids = build_author_ids
+  rescue AuthorCreationError => e
+    errors.add(:base, e.message)
+  rescue StandardError => e
+    errors.add(:base, "予期しないエラーが発生しました: #{e.message}")
+  end
+
+  def build_author_ids
+    ids = Array(author_ids).compact_blank.map(&:to_i)
+    new_ids = new_author_ids_from_names
+    (ids + new_ids).uniq
+  end
+
+  def new_author_ids_from_names
+    normalize_author_names(new_author_names).map do |name|
+      find_or_create_author(name).id
+    end
+  end
+
   def normalize_author_names(names)
-    raw =
-      case names
-      when String
-        names.split(/[,\n]/)
-      else
-        Array(names)
-      end
+    return [] if names.blank?
+
+    raw = case names
+          when String
+            names.split(/[,\n]/)
+          when Array
+            names
+          else
+            [names.to_s]
+          end
 
     raw.map { |n| n.to_s.strip }.compact_blank.uniq
   end
@@ -64,7 +74,6 @@ class Book < ApplicationRecord
   rescue ActiveRecord::RecordInvalid => e
     raise AuthorCreationError, "著者「#{name}」の作成に失敗しました: #{e.record.errors.full_messages.join(', ')}"
   rescue ActiveRecord::RecordNotUnique
-    # 同時リクエストで作成された場合、再取得を試行
     Author.find_by!(name: name)
   end
 end

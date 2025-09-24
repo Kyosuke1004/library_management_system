@@ -69,7 +69,7 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
     end
     follow_redirect!
     assert_match '新しいテスト本', response.body
-    assert_match '本が正常に作成されました', response.body
+    assert_match '本が正常に保存されました', response.body
 
     # 5. 作成した本を編集
     new_book = Book.last
@@ -87,7 +87,7 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
     }
     follow_redirect!
     assert_match '更新されたテスト本', response.body
-    assert_match '本が正常に更新されました', response.body
+    assert_match '本が正常に保存されました', response.body
 
     # 6. 本を削除
     assert_difference 'Book.count', -1 do

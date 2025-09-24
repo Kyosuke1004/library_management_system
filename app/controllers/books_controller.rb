@@ -18,12 +18,13 @@ class BooksController < ApplicationController
   end
 
   def create
-    @book = Book.new
-    save_book(:new, '本が正常に作成されました。')
+    @book = Book.new(book_params)
+    save_book_and_redirect(@book, :new)
   end
 
   def update
-    save_book(:edit, '本が正常に更新されました。')
+    @book.assign_attributes(book_params)
+    save_book_and_redirect(@book, :edit)
   end
 
   def destroy
@@ -38,30 +39,21 @@ class BooksController < ApplicationController
   end
 
   def book_params
-    params.require(:book).permit(:title, :isbn, :published_year, :publisher, author_ids: [])
+    params.require(:book).permit(:title,
+                                 :isbn,
+                                 :published_year,
+                                 :publisher,
+                                 :new_author_names,
+                                 author_ids: [],
+                                 new_author_names: [])
   end
 
-  def author_assignment_params
-    params.require(:book).permit(:new_author_names, author_ids: [], new_author_names: [])
-  end
-
-  def save_book(render_action, success_message)
-    @book.assign_attributes(book_params)
-    @book.assign_authors_by_ids_and_names(
-      author_assignment_params[:author_ids],
-      author_assignment_params[:new_author_names]
-    )
-
-    if @book.save
-      redirect_to @book, notice: success_message
+  def save_book_and_redirect(book, render_action)
+    book.new_author_names = book_params[:new_author_names]
+    if book.save
+      redirect_to book, notice: '本が正常に保存されました。'
     else
       render render_action, status: :unprocessable_content
     end
-  rescue Book::AuthorCreationError => e
-    @book.errors.add(:base, e.message) # エラーメッセージを追加
-    render render_action, status: :unprocessable_content
-  rescue StandardError => e
-    @book.errors.add(:base, "予期しないエラーが発生しました: #{e.message}")
-    render render_action, status: :internal_server_error
   end
 end
