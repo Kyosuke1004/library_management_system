@@ -82,7 +82,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
           isbn: '9876543210',
           published_year: 2023,
           publisher: '新出版社',
-          new_author_names: ['新著者']
+          author_names: '新著者'
         }
       }
     end
@@ -92,7 +92,6 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
 
   test 'should create book with multiple authors' do
     sign_in @user
-    author2 = Author.create!(name: '著者2')
     assert_difference('Book.count') do
       post books_url, params: {
         book: {
@@ -100,7 +99,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
           isbn: '1111111111',
           published_year: 2024,
           publisher: 'テスト出版',
-          author_ids: [@author.id, author2.id]
+          author_names: '著者1, 著者2'
         }
       }
     end
@@ -118,7 +117,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
             isbn: '9876543210',
             published_year: 2023,
             publisher: '新出版社',
-            new_author_names: %w[新著者A 新著者B]
+            author_names: '新著者A, 新著者B'
           }
         }
       end
@@ -163,7 +162,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
           published_year: @book.published_year,
           publisher: @book.publisher,
           author_ids: [@author.id],
-          new_author_names: ['追加著者']
+          author_names: '追加著者'
         }
       }
     end
@@ -302,6 +301,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     assert_select 'h2.title', text: 'Ruby on Rails入門'
     assert_select 'h2.title', text: 'Java基礎講座'
   end
+
   test 'should show search results count' do
     get books_path, params: { search: '山田' }
     assert_response :success

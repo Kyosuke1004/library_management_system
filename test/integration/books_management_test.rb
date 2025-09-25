@@ -45,7 +45,7 @@ class BooksManagementTest < ActionDispatch::IntegrationTest
           published_year: book.published_year,
           publisher: book.publisher,
           author_ids: [@author.id],
-          new_author_names: ['新しい著者']
+          author_names: '新しい著者'
         }
       }
     end
@@ -66,7 +66,8 @@ class BooksManagementTest < ActionDispatch::IntegrationTest
           title: '', # 必須項目が空
           isbn: '',
           published_year: nil,
-          publisher: ''
+          publisher: '',
+          author_names: '' # ← authors 必須のため追加
         }
       }
     end

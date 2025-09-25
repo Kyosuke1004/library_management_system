@@ -7,21 +7,10 @@
         <%= f.text_field :title, class: "input" %>
       </div>
     </div>
-    <div class="field">
-      <label class="label">著者（既存：チェックで削除／新規：下の欄で追加）</label>
-      <div>
-        <% Author.all.each do |author| %>
-          <label class="checkbox mr-2">
-            <%= check_box_tag "book[author_ids][]", author.id, @book.author_ids.include?(author.id) %>
-            <%= author.name %>
-          </label>
-        <% end %>
-      </div>
-    </div>
     <div class="field mt-2">
-      <label class="label">新規著者（カンマ区切り・予測変換可）</label>
+      <label class="label">著者（カンマ区切り・予測変換可）</label>
       <div class="control" style="position: relative;">
-        <%= f.text_area :new_author_names, rows: 2, class: "input", id: "author-input", autocomplete: "off" %>
+        <%= f.text_area :author_names, rows: 2, class: "input", id: "author-input", autocomplete: "off", value: @book.authors.map(&:name).join(', ') %>
         <div id="author-suggestions"></div>
       </div>
     </div>

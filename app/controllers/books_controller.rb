@@ -43,13 +43,11 @@ class BooksController < ApplicationController
                                  :isbn,
                                  :published_year,
                                  :publisher,
-                                 :new_author_names,
-                                 author_ids: [],
-                                 new_author_names: [])
+                                 :author_names,
+                                 author_ids: [])
   end
 
   def save_book_and_redirect(book, render_action)
-    book.new_author_names = book_params[:new_author_names]
     if book.save
       redirect_to book, notice: '本が正常に保存されました。'
     else

@@ -11,9 +11,10 @@ class Book < ApplicationRecord
   validates :publisher, presence: true
   validates :authors, presence: true
 
-  attr_accessor :new_author_names
+  # 仮想属性
+  attr_accessor :author_names
 
-  before_validation :assign_authors_from_params
+  before_validation :assign_authors_from_names
 
   scope :search_by_title_or_author, lambda { |search_term|
     return all if search_term.blank?
@@ -30,49 +31,28 @@ class Book < ApplicationRecord
     loans.currently_borrowed.empty?
   end
 
-  class AuthorCreationError < StandardError; end
-
   private
 
-  def assign_authors_from_params
-    self.author_ids = build_author_ids
-  rescue AuthorCreationError => e
-    errors.add(:base, e.message)
-  rescue StandardError => e
-    errors.add(:base, "予期しないエラーが発生しました: #{e.message}")
-  end
+  def assign_authors_from_names
+    return if author_names.blank?
 
-  def build_author_ids
-    ids = Array(author_ids).compact_blank.map(&:to_i)
-    new_ids = new_author_ids_from_names
-    (ids + new_ids).uniq
-  end
-
-  def new_author_ids_from_names
-    normalize_author_names(new_author_names).map do |name|
-      find_or_create_author(name).id
-    end
+    names = normalize_author_names(author_names)
+    self.authors = names.map { |name| find_or_create_author(name) }
   end
 
   def normalize_author_names(names)
-    return [] if names.blank?
-
-    raw = case names
-          when String
-            names.split(/[,\n]/)
-          when Array
-            names
-          else
-            [names.to_s]
-          end
-
-    raw.map { |n| n.to_s.strip }.compact_blank.uniq
+    case names
+    when String
+      names.split(/[,\n]/).map(&:strip).reject(&:blank?).uniq
+    when Array
+      names.map(&:strip).reject(&:blank?).uniq
+    else
+      []
+    end
   end
 
   def find_or_create_author(name)
     Author.find_or_create_by!(name: name)
-  rescue ActiveRecord::RecordInvalid => e
-    raise AuthorCreationError, "著者「#{name}」の作成に失敗しました: #{e.record.errors.full_messages.join(', ')}"
   rescue ActiveRecord::RecordNotUnique
     Author.find_by!(name: name)
   end
