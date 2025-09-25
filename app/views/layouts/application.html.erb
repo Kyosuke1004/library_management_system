@@ -12,8 +12,13 @@
     <nav class="navbar custom-navbar" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
         <%= link_to '図書管理システム', root_path, class: "navbar-item" %>
+        <button class="navbar-burger" aria-label="メニュー" aria-expanded="false" data-target="navbarBasicExample">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
       </div>
-      <div class="navbar-menu">
+      <div class="navbar-menu" id="navbarBasicExample">
         <div class="navbar-start">
           <%= link_to '図書一覧', books_path, class: "navbar-item" %>
         </div>
@@ -22,16 +27,10 @@
             <div class="navbar-item">
               こんにちは、<%= current_user.email %>さん
             </div>
-            <div class="navbar-item">
-              <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: "button is-light" %>
-            </div>
+            <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: "navbar-item" %>
           <% else %>
-            <div class="navbar-item">
-              <%= link_to 'ログイン', new_user_session_path, class: "button is-light" %>
-            </div>
-            <div class="navbar-item">
-              <%= link_to '会員登録', new_user_registration_path, class: "button is-primary" %>
-            </div>
+            <%= link_to 'ログイン', new_user_session_path, class: "navbar-item" %>
+            <%= link_to '会員登録', new_user_registration_path, class: "navbar-item" %>
           <% end %>
         </div>
       </div>
@@ -39,10 +38,10 @@
     <div class="container mt-4">
       <% flash.each do |type, message| %>
         <% bulma_type = case type
-      when 'notice' then 'is-success'
-      when 'alert' then 'is-danger'
-      else 'is-info'
-    end %>
+          when 'notice' then 'is-success'
+          when 'alert' then 'is-danger'
+          else 'is-info'
+        end %>
         <div class="notification <%= bulma_type %>">
           <button class="delete" onclick="this.parentElement.style.display='none'"></button>
           <%= message %>

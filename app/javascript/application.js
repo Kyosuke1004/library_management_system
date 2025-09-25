@@ -1,4 +1,12 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+// application.js
 import "@hotwired/turbo-rails"
 import "controllers"
-import "./author_autocomplete";
+import "./author_autocomplete"
+import { setupNavbar } from "./navbar"
+import { setupAuthorInputValidation } from "./book_form_validation"
+
+// Turbo対応: ページロードごとに必ず実行される
+document.addEventListener('turbo:load', () => {
+  setupNavbar();
+  setupAuthorInputValidation();
+});

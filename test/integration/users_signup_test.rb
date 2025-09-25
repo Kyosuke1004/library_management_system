@@ -4,13 +4,7 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create!(email: 'test@example.com', password: 'password')
     @author = Author.create!(name: 'テスト著者')
-    @book = Book.create!(
-      title: 'テスト本',
-      isbn: '1234567890',
-      published_year: 2024,
-      publisher: 'テスト出版',
-      authors: [@author]
-    )
+    @book = Book.create!(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@author])
   end
 
   test 'unauthenticated user can browse books but cannot manage them' do

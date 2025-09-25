@@ -34,20 +34,18 @@ class Book < ApplicationRecord
   private
 
   def assign_authors_from_names
-    if author_names.blank?
-      self.authors = []
-    else
-      names = normalize_author_names(author_names)
-      self.authors = names.map { |name| find_or_create_author(name) }
-    end
+    return unless author_names.present?
+
+    names = normalize_author_names(author_names)
+    self.authors = names.map { |name| find_or_create_author(name) }
   end
 
   def normalize_author_names(names)
     case names
     when String
-      names.split(/[,\n]/).map(&:strip).reject(&:blank?).uniq
+      names.split(/[,\n]/).map(&:strip).compact_blank.uniq
     when Array
-      names.map(&:strip).reject(&:blank?).uniq
+      names.map(&:strip).compact_blank.uniq
     else
       []
     end
