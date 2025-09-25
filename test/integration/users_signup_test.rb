@@ -48,7 +48,7 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
     # 2. 新規作成ページにアクセス
     get new_book_path
     assert_response :success
-    assert_match '新しい本を登録', response.body
+    assert_match '図書情報の登録', response.body
 
     # 3. 実際に本を作成
     assert_difference 'Book.count' do

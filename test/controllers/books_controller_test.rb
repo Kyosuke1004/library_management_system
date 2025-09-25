@@ -53,7 +53,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get new_book_url
     assert_response :success
-    assert_includes response.body, '新しい本を登録'
+    assert_includes response.body, '図書情報の登録'
   end
 
   # Create アクションのテスト
