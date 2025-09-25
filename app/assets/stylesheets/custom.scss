@@ -1,0 +1,34 @@
+// ナビバーのカスタムカラー設定
+.navbar.custom-navbar {
+  background-color: #074309; // ナビバーの背景色
+  color: #fff;               // ナビバー内の文字色
+}
+
+// ナビバー内のリンク・アイテムの文字色
+.navbar.custom-navbar .navbar-item,
+.navbar.custom-navbar .navbar-link {
+  color: #fff;
+}
+
+// 検索ボタンのカラー設定
+.button.custom-search-button {
+  background-color: #074309; // ボタンの背景色
+  color: #fff;               // ボタンの文字色
+  border: none;              // ボタンの境界線をなしに設定
+}
+
+// カードのホバー時のデザイン
+.card:hover {
+  background-color: #f5f5f5;                       // ホバー時の背景色
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);         // ホバー時の影
+  cursor: pointer;                                 // ポインター表示
+}
+
+#author-suggestions {
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+#author-suggestions .menu-item:hover {
+  background: #f0f0f0;
+}

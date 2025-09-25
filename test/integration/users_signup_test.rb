@@ -45,17 +45,12 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
     }
     follow_redirect!
 
-    # 2. 書籍一覧にアクセス
-    get books_path
-    assert_response :success
-    assert_match '新しい本を登録', response.body # ログイン時のみ表示
-
-    # 3. 新規作成ページにアクセス
+    # 2. 新規作成ページにアクセス
     get new_book_path
     assert_response :success
     assert_match '新しい本を登録', response.body
 
-    # 4. 実際に本を作成
+    # 3. 実際に本を作成
     assert_difference 'Book.count' do
       post books_path, params: {
         book: {
@@ -71,7 +66,7 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
     assert_match '新しいテスト本', response.body
     assert_match '本が正常に保存されました', response.body
 
-    # 5. 作成した本を編集
+    # 4. 作成した本を編集
     new_book = Book.last
     get edit_book_path(new_book)
     assert_response :success
@@ -89,7 +84,7 @@ class BooksAuthenticationTest < ActionDispatch::IntegrationTest
     assert_match '更新されたテスト本', response.body
     assert_match '本が正常に保存されました', response.body
 
-    # 6. 本を削除
+    # 5. 本を削除
     assert_difference 'Book.count', -1 do
       delete book_path(new_book)
     end

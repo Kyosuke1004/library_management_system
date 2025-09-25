@@ -1,45 +1,40 @@
-<h1>図書一覧</h1>
-<%= form_with url: books_path, method: :get, local: true do |f| %>
-  <%= f.text_field :search, 
-      placeholder: 'タイトルまたは著者名で検索',
-      value: params[:search] %>
-  <%= f.submit '検索' %>
-  <% if params[:search].present? %>
-    <%= link_to 'クリア', books_path %>
-  <% end %>
-<% end %>
-<% if params[:search].present? %>
-  <p>「<%= params[:search] %>」の検索結果: <%= @books.size %>件</p>
-<% end %>
-<% if user_signed_in? %>
-  <%= link_to '新しい本を登録', new_book_path %>
-<% end %>
-<table>
-  <thead>
-    <tr>
-      <th>タイトル</th>
-      <th>ISBN</th>
-      <th>出版年</th>
-      <th>出版社</th>
-      <th>著者</th>
-      <th>操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @books.each do |book| %>
-      <tr>
-        <td><%= book.title %></td>
-        <td><%= book.isbn %></td>
-        <td><%= book.published_year %></td>
-        <td><%= book.publisher %></td>
-        <td><%= book.authors.map(&:name).join(', ') %></td>
-        <td>
-          <%= link_to '詳細', book_path(book) %>
-          <% if user_signed_in? %>
-            | <%= link_to '編集', edit_book_path(book) %>
-          <% end %>
-        </td>
-      </tr>
+<div class="columns is-vcentered mb-4">
+  <div class="column is-half">
+    <h1 class="title is-3">図書一覧</h1>
+    <% if params[:search].present? %>
+      <p class="mt-2 has-text-grey">
+        「<%= params[:search] %>」の検索結果: <%= @books.count %>件
+      </p>
     <% end %>
-  </tbody>
-</table>
+  </div>
+  <div class="column is-half">
+    <%= form_with url: books_path, method: :get, local: true, html: {class: "field has-addons is-justify-content-right"} do |f| %>
+      <div class="control">
+        <%= f.text_field :search, 
+            placeholder: 'タイトル/著者名で検索',
+            value: params[:search],
+            class: "input" %>
+      </div>
+      <div class="control">
+        <%= f.submit '検索', class: "button custom-search-button" %>
+      </div>
+      <% if params[:search].present? %>
+        <div class="control">
+          <%= link_to 'クリア', books_path, class: "button is-light" %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+<div class='columns is-multiline'>
+  <% @books.each do |book| %>
+    <div class='column is-one-third'>
+      <%= link_to book_path(book), class: "card", style: "display:block; text-decoration:none; color:inherit" do %>
+        <div class="card-content">
+          <h2 class="title is-5"><%= book.title %></h2>
+          <p class="subtitle is-6"><%= book.authors.map(&:name).join(', ') %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -278,31 +278,30 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
   test 'should search books by title' do
     get books_path, params: { search: 'Ruby' }
     assert_response :success
-    assert_select 'td', text: 'Ruby on Rails入門'
-    assert_select 'td', text: 'Java基礎講座', count: 0
+    assert_select 'h2.title', text: 'Ruby on Rails入門'
+    assert_select 'h2.title', text: 'Java基礎講座', count: 0
   end
 
   test 'should search books by author name' do
     get books_path, params: { search: '山田' }
     assert_response :success
-    assert_select 'td', text: 'Ruby on Rails入門'
-    assert_select 'td', text: 'Java基礎講座', count: 0
+    assert_select 'h2.title', text: 'Ruby on Rails入門'
+    assert_select 'h2.title', text: 'Java基礎講座', count: 0
   end
 
   test 'should search case insensitively' do
     get books_path, params: { search: 'ruby' }
     assert_response :success
-    assert_select 'td', text: 'Ruby on Rails入門'
+    assert_select 'h2.title', text: 'Ruby on Rails入門'
   end
 
   test 'should show all books when no search parameter' do
     get books_path
     assert_response :success
-    assert_select 'td', text: 'テスト本'
-    assert_select 'td', text: 'Ruby on Rails入門'
-    assert_select 'td', text: 'Java基礎講座'
+    assert_select 'h2.title', text: 'テスト本'
+    assert_select 'h2.title', text: 'Ruby on Rails入門'
+    assert_select 'h2.title', text: 'Java基礎講座'
   end
-
   test 'should show search results count' do
     get books_path, params: { search: '山田' }
     assert_response :success

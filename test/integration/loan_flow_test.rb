@@ -30,8 +30,8 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
     # 本の詳細ページにアクセス
     get book_path(@book)
     assert_response :success
-    assert_select 'dd', '貸出可能'
-    assert_select 'button', text: '貸出'
+    assert_select 'p', text: /貸出可能/
+    assert_select 'form button', text: '貸出'
 
     # 貸出実行
     post loans_path, params: { book_id: @book.id }
@@ -39,8 +39,8 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     # 貸出後の状態確認
-    assert_select 'dd', '貸出中'
-    assert_select 'button', text: '返却'
+    assert_select 'p', text: /貸出中/
+    assert_select 'form button', text: '返却'
 
     # 返却実行
     loan = Loan.last
@@ -49,8 +49,8 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     # 返却後の状態確認
-    assert_select 'dd', '貸出可能'
-    assert_select 'button', text: '貸出'
+    assert_select 'p', text: /貸出可能/
+    assert_select 'form button', text: '貸出'
   end
 
   # ========================================
@@ -65,8 +65,8 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
     sign_in @user1
     get book_path(@book)
     assert_response :success
-    assert_select 'dd', '貸出中'
-    assert_select 'button', text: '返却'
+    assert_select 'p', text: /貸出中/
+    assert_select 'form button', text: '返却'
 
     # ログアウト
     sign_out @user1
@@ -75,18 +75,18 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
     sign_in @user2
     get book_path(@book)
     assert_response :success
-    assert_select 'dd', '貸出中'
-    assert_select 'button', text: '返却', count: 0
+    assert_select 'p', text: /貸出中/
+    assert_select 'form button', text: '返却', count: 0
   end
 
   test 'guest user cannot see loan buttons' do
     # ログインせずに本の詳細ページにアクセス
     get book_path(@book)
     assert_response :success
-    assert_select 'dd', '貸出可能'
+    assert_select 'p', text: /貸出可能/
 
     # ゲストユーザーには貸出ボタンが表示されない
-    assert_select 'button', text: '貸出', count: 0
+    assert_select 'form button', text: '貸出', count: 0
     assert_select 'a', text: 'ログイン'
   end
 
@@ -119,12 +119,12 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
 
     # 本1（自分が借りた本）- 返却ボタンが表示される
     get book_path(@book)
-    assert_select 'dd', '貸出中'
-    assert_select 'button', text: '返却'
+    assert_select 'p', text: /貸出中/
+    assert_select 'form button', text: '返却'
 
     # 本2（他人が借りた本）- 返却ボタンは表示されない
     get book_path(@book2)
-    assert_select 'dd', '貸出中'
-    assert_select 'button', text: '返却', count: 0
+    assert_select 'p', text: /貸出中/
+    assert_select 'form button', text: '返却', count: 0
   end
 end
