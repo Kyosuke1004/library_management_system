@@ -37,8 +37,16 @@
       </div>
     </nav>
     <div class="container mt-4">
-      <% if notice %>
-        <div class="notification is-info"><%= notice %></div>
+      <% flash.each do |type, message| %>
+        <% bulma_type = case type
+      when 'notice' then 'is-success'
+      when 'alert' then 'is-danger'
+      else 'is-info'
+    end %>
+        <div class="notification <%= bulma_type %>">
+          <button class="delete" onclick="this.parentElement.style.display='none'"></button>
+          <%= message %>
+        </div>
       <% end %>
       <%= yield %>
     </div>

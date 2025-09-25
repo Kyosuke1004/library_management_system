@@ -1,10 +1,10 @@
 <%= form_with(model: book, local: true) do |f| %>
   <% if book.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</h2>
+    <div class="notification is-danger mb-4">
+      <strong><%= pluralize(book.errors.count, "件のエラー") %>があります:</strong>
       <ul>
-        <% book.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+        <% book.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
         <% end %>
       </ul>
     </div>
@@ -12,33 +12,48 @@
   <div class="field">
     <label class="label">タイトル</label>
     <div class="control">
-      <%= f.text_field :title, class: "input" %>
+      <%= f.text_field :title, class: "input#{' is-danger' if book.errors[:title].any?}" %>
     </div>
+    <% if book.errors[:title].any? %>
+      <p class="help is-danger"><%= book.errors[:title].first %></p>
+    <% end %>
   </div>
   <div class="field mt-2">
     <label class="label">著者（複数著者はカンマ区切り）</label>
     <div class="control" style="position: relative;">
-      <%= f.text_area :author_names, rows: 2, class: "input", id: "author-input", autocomplete: "off", value: book.authors.map(&:name).join(', ') %>
+      <%= f.text_area :author_names, rows: 2, class: "input#{' is-danger' if book.errors[:authors].any?}", id: "author-input", autocomplete: "off", value: book.authors.map(&:name).join(', ') %>
       <div id="author-suggestions"></div>
     </div>
+    <% if book.errors[:authors].any? %>
+      <p class="help is-danger"><%= book.errors[:authors].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <label class="label">出版社</label>
     <div class="control">
-      <%= f.text_field :publisher, class: "input" %>
+      <%= f.text_field :publisher, class: "input#{' is-danger' if book.errors[:publisher].any?}" %>
     </div>
+    <% if book.errors[:publisher].any? %>
+      <p class="help is-danger"><%= book.errors[:publisher].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <label class="label">出版年</label>
     <div class="control">
-      <%= f.text_field :published_year, class: "input" %>
+      <%= f.text_field :published_year, class: "input#{' is-danger' if book.errors[:published_year].any?}" %>
     </div>
+    <% if book.errors[:published_year].any? %>
+      <p class="help is-danger"><%= book.errors[:published_year].first %></p>
+    <% end %>
   </div>
   <div class="field">
     <label class="label">ISBN</label>
     <div class="control">
-      <%= f.text_field :isbn, class: "input" %>
+      <%= f.text_field :isbn, class: "input#{' is-danger' if book.errors[:isbn].any?}" %>
     </div>
+    <% if book.errors[:isbn].any? %>
+      <p class="help is-danger"><%= book.errors[:isbn].first %></p>
+    <% end %>
   </div>
   <div class="field is-grouped mt-4">
     <div class="control">

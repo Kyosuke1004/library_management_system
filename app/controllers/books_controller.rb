@@ -51,7 +51,8 @@ class BooksController < ApplicationController
     if book.save
       redirect_to book, notice: '本が正常に保存されました。'
     else
-      render render_action, status: :unprocessable_content
+      flash.now[:alert] = '保存に失敗しました。入力内容を確認してください。'
+      render render_action, status: :unprocessable_entity
     end
   end
 end

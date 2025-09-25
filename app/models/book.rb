@@ -34,10 +34,12 @@ class Book < ApplicationRecord
   private
 
   def assign_authors_from_names
-    return if author_names.blank?
-
-    names = normalize_author_names(author_names)
-    self.authors = names.map { |name| find_or_create_author(name) }
+    if author_names.blank?
+      self.authors = []
+    else
+      names = normalize_author_names(author_names)
+      self.authors = names.map { |name| find_or_create_author(name) }
+    end
   end
 
   def normalize_author_names(names)
