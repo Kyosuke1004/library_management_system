@@ -6,6 +6,9 @@
         「<%= params[:search] %>」の検索結果: <%= @books.count %>件
       </p>
     <% end %>
+    <% if current_user&.admin? %>
+      <%= link_to '新規作成', new_book_path, class: "button is-primary mt-3" %>
+    <% end %>
   </div>
   <div class="column is-half">
     <%= form_with url: books_path, method: :get, local: true, html: {class: "field has-addons is-justify-content-right"} do |f| %>

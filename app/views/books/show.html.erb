@@ -26,7 +26,9 @@
       <% end %>
     <% end %>
     <%= link_to '一覧に戻る', books_path, class: "button is-light" %>
-    <%= link_to '編集', edit_book_path(@book), class: "button is-warning is-light" %>
-    <%= link_to '削除', book_path(@book), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: "button is-danger is-light" %>
+    <% if current_user&.admin? %>
+      <%= link_to '編集', edit_book_path(@book), class: "button is-warning is-light" %>
+      <%= link_to '削除', book_path(@book), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: "button is-danger is-light" %>
+    <% end %>
   </div>
 </div>
