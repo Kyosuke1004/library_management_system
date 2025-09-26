@@ -1,6 +1,7 @@
 class BooksController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
   before_action :set_book, only: %i[show edit update destroy]
+  before_action :require_admin, only: %i[new create edit update destroy]
 
   def index
     @books = Book.search_by_title_or_author(params[:search])
@@ -29,10 +30,16 @@ class BooksController < ApplicationController
 
   def destroy
     @book.destroy
-    redirect_to books_url, notice: '本が正常に削除されました。'
+    redirect_to books_path, notice: '本が正常に削除されました。'
   end
 
   private
+
+  def require_admin
+    return if current_user.admin?
+
+    redirect_to books_path, alert: '管理者のみ操作可能です。'
+  end
 
   def set_book
     @book = Book.find(params[:id])
