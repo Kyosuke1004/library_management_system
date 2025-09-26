@@ -1,7 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-
-two:
-  name: MyString
+author:
+  name: テスト著者
+author_yamada:
+  name: 山田太郎
+author_tanaka:
+  name: 田中花子

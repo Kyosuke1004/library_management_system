@@ -2,8 +2,7 @@ require 'test_helper'
 
 class UserBaseTest < ActiveSupport::TestCase
   def setup
-    @user = User.new(email: 'user@example.com',
-                     password: 'foobar', password_confirmation: 'foobar')
+    @user = users(:user)
   end
 end
 
@@ -58,7 +57,7 @@ class UserAssociationTest < UserBaseTest
   end
 
   test 'should destroy associated loans when user is destroyed' do
-    assert_difference 'Loan.count', -1 do
+    assert_difference 'Loan.count', -2 do
       @user.destroy
     end
   end

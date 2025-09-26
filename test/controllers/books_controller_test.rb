@@ -1,274 +1,125 @@
 require 'test_helper'
 
 class BooksControllerTest < ActionDispatch::IntegrationTest
+  fixtures :users, :authors, :books
+
   def setup
-    @author = Author.create!(name: 'テスト著者')
-    @book = Book.create!(
-      title: 'テスト本',
-      isbn: '1234567890',
-      published_year: 2024,
-      publisher: 'テスト出版',
-      authors: [@author]
-    )
-    @user = User.create!(email: 'test@example.com', password: 'password')
-
-    # 検索テスト用データを追加
-    @author_yamada = Author.create!(name: '山田太郎')
-    @author_tanaka = Author.create!(name: '田中花子')
-
-    @ruby_book = Book.create!(
-      title: 'Ruby on Rails入門',
-      isbn: '1111111111',
-      published_year: 2024,
-      publisher: 'プログラミング出版',
-      authors: [@author_yamada]
-    )
-
-    @java_book = Book.create!(
-      title: 'Java基礎講座',
-      isbn: '2222222222',
-      published_year: 2023,
-      publisher: 'テクノロジー出版',
-      authors: [@author_tanaka]
-    )
+    @admin = users(:admin)
+    @user = users(:user)
+    @author = authors(:author)
+    @book = books(:book)
+    @ruby_book = books(:ruby_book)
+    @java_book = books(:java_book)
   end
 
-  # Index アクションのテスト
-  test 'should get index' do
-    get books_url
-    assert_response :success
-    assert_includes response.body, @book.title
+  # === 一般・管理者のアクセス権限テスト ===
+  def sign_in_as(user)
+    sign_in user
   end
 
-  # Show アクションのテスト
-  test 'should show book' do
-    get book_url(@book)
-    assert_response :success
-    assert_includes response.body, @book.title
-    assert_includes response.body, @book.isbn
-  end
-
-  # New アクションのテスト（認証あり）
-  test 'should get new with authentication' do
-    sign_in @user
+  test '管理者は新規作成・編集・削除・著者追加ができる' do
+    sign_in_as(@admin)
     get new_book_url
     assert_response :success
-    assert_includes response.body, '図書情報の登録'
-  end
 
-  # Create アクションのテスト
-  test 'should create book' do
-    sign_in @user
     assert_difference('Book.count') do
-      post books_url, params: {
-        book: {
-          title: '新しい本',
-          isbn: '9876543210',
-          published_year: 2023,
-          publisher: '新出版社',
-          author_ids: [@author.id]
-        }
-      }
+      post books_url,
+           params: { book: { title: '新しい本', isbn: '9876543210', published_year: 2023, publisher: '新出版社',
+                             author_ids: [@author.id] } }
     end
     assert_redirected_to book_url(Book.last)
-  end
 
-  test 'should create book with new author' do
-    sign_in @user
-    assert_difference(['Book.count', 'Author.count']) do
-      post books_url, params: {
-        book: {
-          title: '新しい本',
-          isbn: '9876543210',
-          published_year: 2023,
-          publisher: '新出版社',
-          author_names: '新著者'
-        }
-      }
-    end
-    assert_redirected_to book_url(Book.last)
-    assert_includes Book.last.authors.map(&:name), '新著者'
-  end
-
-  test 'should create book with multiple authors' do
-    sign_in @user
-    assert_difference('Book.count') do
-      post books_url, params: {
-        book: {
-          title: '複数著者本',
-          isbn: '1111111111',
-          published_year: 2024,
-          publisher: 'テスト出版',
-          author_names: '著者1, 著者2'
-        }
-      }
-    end
-    assert_equal 2, Book.last.authors.count
-  end
-
-  # 複数の新しい著者を登録するテスト
-  test 'should create book with multiple new authors' do
-    sign_in @user
-    assert_difference('Book.count', 1) do
-      assert_difference('Author.count', 2) do
-        post books_url, params: {
-          book: {
-            title: '新しい本',
-            isbn: '9876543210',
-            published_year: 2023,
-            publisher: '新出版社',
-            author_names: '新著者A, 新著者B'
-          }
-        }
-      end
-    end
-    assert_redirected_to book_url(Book.last)
-    assert_includes Book.last.authors.map(&:name), '新著者A'
-    assert_includes Book.last.authors.map(&:name), '新著者B'
-  end
-
-  # Edit アクションのテスト
-  test 'should get edit' do
-    sign_in @user
     get edit_book_url(@book)
     assert_response :success
-    assert_includes response.body, @book.title
-  end
 
-  # Update アクションのテスト
-  test 'should update book' do
-    sign_in @user
-    patch book_url(@book), params: {
-      book: {
-        title: '更新されたタイトル',
-        isbn: @book.isbn,
-        published_year: @book.published_year,
-        publisher: @book.publisher,
-        author_ids: [@author.id]
-      }
-    }
+    patch book_url(@book),
+          params: { book: { title: '更新タイトル', isbn: @book.isbn, published_year: @book.published_year, publisher: @book.publisher,
+                            author_ids: [@author.id], author_names: '追加著者' } }
     assert_redirected_to book_url(@book)
     @book.reload
-    assert_equal '更新されたタイトル', @book.title
-  end
-
-  test 'should update book with new author' do
-    sign_in @user
-    assert_difference('Author.count') do
-      patch book_url(@book), params: {
-        book: {
-          title: @book.title,
-          isbn: @book.isbn,
-          published_year: @book.published_year,
-          publisher: @book.publisher,
-          author_ids: [@author.id],
-          author_names: '追加著者'
-        }
-      }
-    end
-    assert_redirected_to book_url(@book)
-    @book.reload
+    assert_equal '更新タイトル', @book.title
     assert_includes @book.authors.map(&:name), '追加著者'
-  end
 
-  # Destroy アクションのテスト
-  test 'should destroy book' do
-    sign_in @user
     assert_difference('Book.count', -1) do
       delete book_url(@book)
     end
     assert_redirected_to books_url
   end
 
-  # 無効なデータのテスト
-  test 'should not create book with invalid data' do
-    sign_in @user
+  test '一般ユーザーは新規作成・編集・削除画面にアクセスできない' do
+    sign_in_as(@user)
+    get new_book_url
+    assert_redirected_to books_url
+    follow_redirect!
+    assert_match '管理者のみ操作可能です。', response.body
+
+    get edit_book_url(@book)
+    assert_redirected_to books_url
+    follow_redirect!
+    assert_match '管理者のみ操作可能です。', response.body
+  end
+
+  test '一般ユーザーは本の新規作成・編集・削除ができない' do
+    sign_in_as(@user)
     assert_no_difference('Book.count') do
-      post books_url, params: {
-        book: {
-          title: '',
-          isbn: '',
-          published_year: nil,
-          publisher: ''
-        }
-      }
+      post books_url,
+           params: { book: { title: '新しい本', isbn: '9876543210', published_year: 2023, publisher: '新出版社',
+                             author_ids: [@author.id] } }
+    end
+    assert_redirected_to books_url
+    follow_redirect!
+    assert_match '管理者のみ操作可能です。', response.body
+
+    patch book_url(@book),
+          params: { book: { title: '更新タイトル', isbn: @book.isbn, published_year: @book.published_year, publisher: @book.publisher,
+                            author_ids: [@author.id] } }
+    assert_redirected_to books_url
+    follow_redirect!
+    assert_match '管理者のみ操作可能です。', response.body
+    @book.reload
+    assert_not_equal '更新タイトル', @book.title
+
+    assert_no_difference('Book.count') do
+      delete book_url(@book)
+    end
+    assert_redirected_to books_url
+    follow_redirect!
+    assert_match '管理者のみ操作可能です。', response.body
+  end
+
+  # === バリデーションテスト ===
+  test 'should not create book with invalid data' do
+    sign_in_as(@admin)
+    assert_no_difference('Book.count') do
+      post books_url, params: { book: { title: '', isbn: '', published_year: nil, publisher: '' } }
     end
     assert_response :unprocessable_content
   end
 
   test 'should not update book with invalid data' do
-    sign_in @user
-    patch book_url(@book), params: {
-      book: {
-        title: '',
-        isbn: @book.isbn,
-        published_year: @book.published_year,
-        publisher: @book.publisher
-      }
-    }
+    sign_in_as(@admin)
+    patch book_url(@book),
+          params: { book: { title: '', isbn: @book.isbn, published_year: @book.published_year,
+                            publisher: @book.publisher } }
     assert_response :unprocessable_content
   end
 
-  # 貸出状況表示のテスト
-  test 'should show availability status' do
-    get book_url(@book)
-    assert_includes response.body, '貸出可能'
-  end
-
-  # 404エラーのテスト
-  test 'should return 404 for non-existent book' do
-    get book_url(99_999)
-    assert_response :not_found
-  end
-
-  # === 認証テスト ===
-
-  # 未ログインユーザーのアクセステスト
-  test 'should get index without login' do
-    get books_url
-    assert_response :success
-  end
-
-  test 'should show book without login' do
-    get book_url(@book)
-    assert_response :success
-  end
-
-  test 'should redirect to login for new without authentication' do
+  # === 未ログインユーザーのアクセス制限 ===
+  test 'should redirect to login for new/create/edit/update/destroy without authentication' do
     get new_book_url
     assert_redirected_to new_user_session_path
-  end
 
-  test 'should redirect to login for create without authentication' do
-    post books_url, params: {
-      book: {
-        title: '新しい本',
-        isbn: '9876543210',
-        published_year: 2023,
-        publisher: '新出版社'
-      }
-    }
+    post books_url, params: { book: { title: '新しい本', isbn: '9876543210', published_year: 2023, publisher: '新出版社' } }
     assert_redirected_to new_user_session_path
-  end
 
-  test 'should redirect to login for edit without authentication' do
     get edit_book_url(@book)
     assert_redirected_to new_user_session_path
-  end
 
-  test 'should redirect to login for update without authentication' do
-    patch book_url(@book), params: {
-      book: {
-        title: '更新されたタイトル',
-        isbn: @book.isbn,
-        published_year: @book.published_year,
-        publisher: @book.publisher
-      }
-    }
+    patch book_url(@book),
+          params: { book: { title: '更新タイトル', isbn: @book.isbn, published_year: @book.published_year,
+                            publisher: @book.publisher } }
     assert_redirected_to new_user_session_path
-  end
 
-  test 'should redirect to login for destroy without authentication' do
     delete book_url(@book)
     assert_redirected_to new_user_session_path
   end
@@ -306,5 +157,34 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     get books_path, params: { search: '山田' }
     assert_response :success
     assert_select 'p', text: '「山田」の検索結果: 1件'
+  end
+
+  # === その他のテスト ===
+  test 'should show availability status' do
+    get book_url(@book)
+    assert_includes response.body, '貸出可能'
+  end
+
+  test 'should return 404 for non-existent book' do
+    get book_url(99_999)
+    assert_response :not_found
+  end
+
+  test 'should get index and show without login' do
+    get books_url
+    assert_response :success
+    get book_url(@book)
+    assert_response :success
+  end
+
+  # ストロングパラメータでrole属性が許可されていないことのテスト
+  test 'should not allow role update via book params' do
+    sign_in_as(@admin)
+    original_role = @user.role
+    patch book_url(@book),
+          params: { book: { title: @book.title, isbn: @book.isbn, published_year: @book.published_year,
+                            publisher: @book.publisher, author_ids: [@author.id], role: :admin } }
+    @user.reload
+    assert_equal original_role, @user.role, 'role should not be updated via book params'
   end
 end

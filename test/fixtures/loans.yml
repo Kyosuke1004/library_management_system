@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  user: one
-  book: one
+loan1:
+  user: admin
+  book: book
   borrowed_at: 2025-09-08 21:13:20
   returned_at: 2025-09-08 21:13:20
 
-two:
-  user: two
-  book: two
+loan2:
+  user: user
+  book: ruby_book
   borrowed_at: 2025-09-08 21:13:20
   returned_at: 2025-09-08 21:13:20

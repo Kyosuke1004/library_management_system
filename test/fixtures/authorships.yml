@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  book: one
-  author: one
+authorship1:
+  book: book
+  author: author
 
-two:
-  book: two
-  author: two
+authorship2:
+  book: ruby_book
+  author: author_yamada
+
+authorship3:
+  book: java_book
+  author: author_tanaka
