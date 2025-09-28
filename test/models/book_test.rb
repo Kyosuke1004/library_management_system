@@ -17,6 +17,27 @@ class BookTest < BookBaseTest
   test 'should be valid' do
     assert @book.valid?
   end
+
+  test 'should have many book_items' do
+    item1 = @book.book_items.create!
+    item2 = @book.book_items.create!
+    assert_includes @book.book_items, item1
+    assert_includes @book.book_items, item2
+    assert_equal 2, @book.book_items.count
+  end
+
+  test 'should destroy associated book_items when book is destroyed' do
+    @book.book_items.create!
+    @book.book_items.create!
+    assert_difference 'BookItem.count', -2 do
+      @book.destroy
+    end
+  end
+
+  test 'should not be valid without authors' do
+    book = Book.new(title: 'No Author Book', isbn: '9999999999', published_year: 2024, publisher: 'テスト出版', authors: [])
+    assert_not book.valid?
+  end
 end
 
 class BookAssociationTest < BookBaseTest

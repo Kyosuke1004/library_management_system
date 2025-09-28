@@ -13,6 +13,11 @@ class LoanTest < ActiveSupport::TestCase
     assert @loan.valid?
   end
 
+  test 'should not be valid without book_item_id' do
+    @loan.book_item = nil
+    assert_not @loan.valid?
+  end
+
   test 'borrowed_at should be present' do
     @loan.borrowed_at = nil
     assert_not @loan.valid?
@@ -21,6 +26,30 @@ class LoanTest < ActiveSupport::TestCase
   test 'should belong to user' do
     @loan.user = nil
     assert_not @loan.valid?
+  end
+
+  test 'should belong to book_item' do
+    assert_equal @book_item, @loan.book_item
+  end
+
+  test 'should destroy loans when book_item is destroyed' do
+    @loan.save!
+    assert_difference('Loan.count', -1) do
+      @book_item.destroy
+    end
+  end
+
+  test 'should destroy loans when user is destroyed' do
+    @loan.save!
+    assert_difference('Loan.count', -1) do
+      @user.destroy
+    end
+  end
+
+  test 'should not allow duplicate currently borrowed loan for same book_item' do
+    @loan.save!
+    duplicate_loan = Loan.new(user: @user, book_item: @book_item, borrowed_at: Time.current)
+    assert_not duplicate_loan.valid?, '同じBookItemを同時に複数人が借りられない'
   end
 
   test 'currently_borrowed scope should return loans without returned_at' do

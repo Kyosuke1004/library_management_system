@@ -3,6 +3,11 @@ Authorship.destroy_all
 Author.destroy_all
 User.destroy_all
 Book.destroy_all
+BookItem.destroy_all
+
+# 管理者・一般ユーザーのサンプル作成
+admin = User.create!(email: 'admin@example.com', password: 'password', role: :admin)
+user = User.create!(email: 'user@example.com', password: 'password', role: :general)
 
 authors = Author.create!([
   { name: "Michael Hartl" },
@@ -98,3 +103,8 @@ created_books << Book.create!(
   publisher: "Prentice Hall",
   authors: [authors[8], authors[7]]
 )
+
+# 各BookにBookItemを3冊ずつ作成
+created_books.each do |book|
+  3.times { BookItem.create!(book: book) }
+end
