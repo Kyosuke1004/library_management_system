@@ -2,12 +2,12 @@
 
 loan1:
   user: admin
-  book: book
+  book_item: book_item1
   borrowed_at: 2025-09-08 21:13:20
   returned_at: 2025-09-08 21:13:20
 
 loan2:
   user: user
-  book: ruby_book
+  book_item: book_item3
   borrowed_at: 2025-09-08 21:13:20
   returned_at: 2025-09-08 21:13:20

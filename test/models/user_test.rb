@@ -45,7 +45,8 @@ class UserAssociationTest < UserBaseTest
     @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@auth])
     @user.save!
     @book.save!
-    @loan = @user.loans.create!(book: @book, borrowed_at: Time.current)
+    @book_item = @book.book_items.create!
+    @loan = @user.loans.create!(book_item: @book_item, borrowed_at: Time.current)
   end
 
   test 'should have many loans' do
@@ -53,7 +54,8 @@ class UserAssociationTest < UserBaseTest
   end
 
   test 'should have many books through loans' do
-    assert_includes @user.books, @book
+    books = @user.loans.map { |l| l.book_item.book }
+    assert_includes books, @book
   end
 
   test 'should destroy associated loans when user is destroyed' do

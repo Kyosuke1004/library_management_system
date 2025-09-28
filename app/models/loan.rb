@@ -1,6 +1,6 @@
 class Loan < ApplicationRecord
   belongs_to :user
-  belongs_to :book
+  belongs_to :book_item
 
   validates :borrowed_at, presence: true
 

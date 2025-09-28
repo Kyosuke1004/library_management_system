@@ -22,15 +22,18 @@ end
 class BookAssociationTest < BookBaseTest
   def setup
     super
-    @loan = @book.loans.create!(user: @user, borrowed_at: Time.current)
+    @book_item = @book.book_items.create!
+    @loan = Loan.create!(user: @user, book_item: @book_item, borrowed_at: Time.current)
   end
 
   test 'should have many loans' do
-    assert_includes @book.loans, @loan
+    loans = @book.book_items.flat_map(&:loans)
+    assert_includes loans, @loan
   end
 
   test 'should have many users through loans' do
-    assert_includes @book.users, @user
+    users = @book.book_items.flat_map { |item| item.loans.map(&:user) }
+    assert_includes users, @user
   end
 
   test 'should destroy associated loans when book is destroyed' do
@@ -57,17 +60,21 @@ class BookAuthorAssociationTest < BookBaseTest
 end
 
 class BookAvailabilityTest < BookBaseTest
+  def setup
+    super
+    @book_item = @book.book_items.create!
+  end
   test 'available? should return true when no current loans' do
     assert @book.available?
   end
 
   test 'available? should return false when currently borrowed' do
-    @book.loans.create!(user: @user, borrowed_at: Time.current)
+    Loan.create!(user: @user, book_item: @book_item, borrowed_at: Time.current)
     assert_not @book.available?
   end
 
   test 'available? should return true when book was returned' do
-    @book.loans.create!(user: @user, borrowed_at: 1.week.ago, returned_at: 1.day.ago)
+    Loan.create!(user: @user, book_item: @book_item, borrowed_at: 1.week.ago, returned_at: 1.day.ago)
     assert @book.available?
   end
 end

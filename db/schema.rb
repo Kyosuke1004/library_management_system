@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_26_041639) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_28_080202) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -26,6 +26,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_26_041639) do
     t.index ["book_id"], name: "index_authorships_on_book_id"
   end
 
+  create_table "book_items", force: :cascade do |t|
+    t.integer "book_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["book_id"], name: "index_book_items_on_book_id"
+  end
+
   create_table "books", force: :cascade do |t|
     t.string "title"
     t.string "isbn"
@@ -37,12 +44,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_26_041639) do
 
   create_table "loans", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.integer "book_id", null: false
     t.datetime "borrowed_at"
     t.datetime "returned_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["book_id"], name: "index_loans_on_book_id"
+    t.integer "book_item_id"
+    t.index ["book_item_id"], name: "index_loans_on_book_item_id"
     t.index ["user_id"], name: "index_loans_on_user_id"
   end
 
@@ -61,6 +68,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_26_041639) do
 
   add_foreign_key "authorships", "authors"
   add_foreign_key "authorships", "books"
-  add_foreign_key "loans", "books"
+  add_foreign_key "book_items", "books"
+  add_foreign_key "loans", "book_items"
   add_foreign_key "loans", "users"
 end

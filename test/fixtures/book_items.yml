@@ -1,0 +1,10 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+book_item1:
+  book: book
+book_item2:
+  book: book
+book_item3:
+  book: ruby_book
+book_item4:
+  book: java_book

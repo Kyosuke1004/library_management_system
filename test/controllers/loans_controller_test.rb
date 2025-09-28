@@ -11,6 +11,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
       publisher: 'テスト出版',
       authors: [@author]
     )
+    @book_item = @book.book_items.create!
   end
 
   # ========================================
@@ -22,11 +23,11 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
 
     # 実行前の状態確認
     assert @book.available?
-    assert_equal 0, @book.loans.currently_borrowed.count
+    assert_equal 0, @book_item.loans.currently_borrowed.count
 
     # 貸出処理の実行
     assert_difference 'Loan.count', 1 do
-      post loans_path, params: { book_id: @book.id }
+      post loans_path, params: { book_item_id: @book_item.id }
     end
 
     # レスポンスの確認
@@ -36,7 +37,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     # 作成されたloanレコードの確認
     loan = Loan.last
     assert_equal @user.id, loan.user_id
-    assert_equal @book.id, loan.book_id
+    assert_equal @book_item.id, loan.book_item_id
     assert_not_nil loan.borrowed_at
     assert_nil loan.returned_at
   end
@@ -44,7 +45,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
   test 'should not create loan when not logged in' do
     # ログインせずに貸出を試行
     assert_no_difference 'Loan.count' do
-      post loans_path, params: { book_id: @book.id }
+      post loans_path, params: { book_item_id: @book_item.id }
     end
 
     # 認証エラーでログインページにリダイレクト
@@ -57,7 +58,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     @other_user = User.create!(email: 'borrower@example.com', password: 'password')
     @existing_loan = Loan.create!(
       user: @other_user,
-      book: @book,
+      book_item: @book_item,
       borrowed_at: 1.day.ago
     )
 
@@ -65,11 +66,11 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
 
     # 実行前の状態確認（貸出中であることを確認）
     assert_not @book.reload.available?
-    assert_equal 1, @book.loans.currently_borrowed.count
+    assert_equal 1, @book_item.loans.currently_borrowed.count
 
     # 貸出処理を試行（失敗するはず）
     assert_no_difference 'Loan.count' do
-      post loans_path, params: { book_id: @book.id }
+      post loans_path, params: { book_item_id: @book_item.id }
     end
 
     # 失敗レスポンスの確認
@@ -82,11 +83,11 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
 
   test 'should not create loan for non-existent book' do
     sign_in @user
-    non_existent_id = Book.maximum(:id).to_i + 1
+    non_existent_id = BookItem.maximum(:id).to_i + 1
 
-    # 存在しない本の貸出を試行
+    # 存在しないBookItemの貸出を試行
     assert_no_difference 'Loan.count' do
-      post loans_path, params: { book_id: non_existent_id }
+      post loans_path, params: { book_item_id: non_existent_id }
     end
 
     # 404エラーが返されることを確認
@@ -101,7 +102,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     # 貸出中のloanを事前に作成
     @loan = Loan.create!(
       user: @user,
-      book: @book,
+      book_item: @book_item,
       borrowed_at: 1.day.ago
     )
 
@@ -131,7 +132,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     @other_user = User.create!(email: 'other@example.com', password: 'password')
     @loan = Loan.create!(
       user: @other_user,
-      book: @book,
+      book_item: @book_item,
       borrowed_at: 1.day.ago
     )
 
@@ -159,7 +160,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     # 既に返却済みのloanを作成
     @loan = Loan.create!(
       user: @user,
-      book: @book,
+      book_item: @book_item,
       borrowed_at: 2.days.ago,
       returned_at: 1.day.ago # 既に返却済み
     )

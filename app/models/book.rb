@@ -1,5 +1,6 @@
 class Book < ApplicationRecord
-  has_many :loans, dependent: :destroy # 本が削除されたときに関連する貸出記録も削除
+  has_many :book_items, dependent: :destroy # 本が削除されたときに関連する本のアイテムも削除
+  has_many :loans, through: :book_items # 本の貸出記録を取得するための関連付け
   has_many :users, through: :loans # 本を借りたユーザーを取得するための関連付け
 
   has_many :authorships, dependent: :destroy # 本が削除されたときに関連する著者情報も削除
@@ -28,7 +29,7 @@ class Book < ApplicationRecord
   }
 
   def available?
-    loans.currently_borrowed.empty?
+    book_items.any? && book_items.any? { |item| item.loans.currently_borrowed.empty? }
   end
 
   private

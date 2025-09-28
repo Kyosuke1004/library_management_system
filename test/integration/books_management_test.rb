@@ -1,3 +1,5 @@
+require 'test_helper'
+
 class BooksManagementTest < ActionDispatch::IntegrationTest
   def setup
     @admin = users(:admin)

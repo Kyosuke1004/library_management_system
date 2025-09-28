@@ -14,6 +14,7 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
       publisher: 'テスト出版',
       authors: [@author]
     )
+    @book_item = @book.book_items.create!
   end
 
   # ========================================
@@ -34,7 +35,7 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
     assert_select 'form button', text: '貸出'
 
     # 貸出実行
-    post loans_path, params: { book_id: @book.id }
+    post loans_path, params: { book_item_id: @book_item.id }
     assert_redirected_to book_path(@book)
     follow_redirect!
 
@@ -59,7 +60,7 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
 
   test 'ui shows correct buttons based on loan status and user' do
     # User1が本を借りている状態を作成
-    Loan.create!(user: @user1, book: @book, borrowed_at: 1.day.ago)
+    Loan.create!(user: @user1, book_item: @book_item, borrowed_at: 1.day.ago)
 
     # 借りた本人でログイン: 返却ボタンあり
     sign_in @user1
@@ -103,15 +104,16 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
       publisher: 'テスト出版',
       authors: [@author2]
     )
+    @book_item2 = @book2.book_items.create!
 
     # User1が本1を借りる
     sign_in @user1
-    post loans_path, params: { book_id: @book.id }
+    post loans_path, params: { book_item_id: @book_item.id }
     sign_out @user1
 
     # User2が本2を借りる
     sign_in @user2
-    post loans_path, params: { book_id: @book2.id }
+    post loans_path, params: { book_item_id: @book_item2.id }
     sign_out @user2
 
     # User1でログインして状況確認

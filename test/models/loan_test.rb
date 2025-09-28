@@ -5,7 +5,8 @@ class LoanTest < ActiveSupport::TestCase
     @user = User.create!(email: 'test@example.com', password: 'password')
     @auth = Author.create!(name: 'テスト著者')
     @book = Book.create!(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@auth])
-    @loan = Loan.new(user: @user, book: @book, borrowed_at: Time.current)
+    @book_item = BookItem.create!(book: @book)
+    @loan = Loan.new(user: @user, book_item: @book_item, borrowed_at: Time.current)
   end
 
   test 'should be valid' do
@@ -22,11 +23,6 @@ class LoanTest < ActiveSupport::TestCase
     assert_not @loan.valid?
   end
 
-  test 'should belong to book' do
-    @loan.book = nil
-    assert_not @loan.valid?
-  end
-
   test 'currently_borrowed scope should return loans without returned_at' do
     @loan.save!
 
@@ -35,9 +31,10 @@ class LoanTest < ActiveSupport::TestCase
     author2 = Author.create!(name: 'テスト著者2')
     book2 = Book.create!(title: 'テスト本2', isbn: '0987654321', published_year: 2023, publisher: 'テスト出版2',
                          authors: [author2])
+    book_item2 = BookItem.create!(book: book2)
     returned_loan = Loan.create!(
       user: user2,
-      book: book2,
+      book_item: book_item2,
       borrowed_at: 1.week.ago,
       returned_at: 1.day.ago
     )
@@ -55,9 +52,10 @@ class LoanTest < ActiveSupport::TestCase
     author3 = Author.create!(name: 'テスト著者3')
     book3 = Book.create!(title: 'テスト本3', isbn: '1122334455', published_year: 2022, publisher: 'テスト出版3',
                          authors: [author3])
+    book_item3 = BookItem.create!(book: book3)
     returned_loan = Loan.create!(
       user: user2,
-      book: book3,
+      book_item: book_item3,
       borrowed_at: 1.week.ago,
       returned_at: 1.day.ago
     )
