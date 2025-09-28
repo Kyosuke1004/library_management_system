@@ -6,6 +6,7 @@
   <p>出版社: <%= @book.publisher %></p>
   <p>出版年: <%= @book.published_year %></p>
   <p>ISBN: <%= @book.isbn %></p>
+  <p><strong>在庫数:</strong> <%= @book.book_items.count %> 冊</p>
   <p>
     <strong>状態:</strong>
     <% if @book.available? %>
