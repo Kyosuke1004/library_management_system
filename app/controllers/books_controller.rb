@@ -51,6 +51,7 @@ class BooksController < ApplicationController
                                  :published_year,
                                  :publisher,
                                  :author_names,
+                                 :stock_count,
                                  author_ids: [])
   end
 

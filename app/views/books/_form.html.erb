@@ -55,6 +55,22 @@
       <p class="help is-danger"><%= book.errors[:isbn].first %></p>
     <% end %>
   </div>
+  <div class="field mt-2" data-controller="stock-counter">
+    <label class="label">在庫数</label>
+    <div class="control" style="display: flex; align-items: center; gap: 8px;">
+      <%= button_tag "-", type: :button, class: "button is-small",
+          data: { action: "stock-counter#decrement" } %>
+      <%= f.number_field :stock_count,
+          value: book.book_items.size,
+          min: 0,
+          class: "input",
+          id: "stock-count-input",
+          style: "width: 80px; text-align: center;",
+          data: { stock_counter_target: "input" } %>
+      <%= button_tag "+", type: :button, class: "button is-small",
+          data: { action: "stock-counter#increment" } %>
+    </div>
+  </div>
   <div class="field is-grouped mt-4">
     <div class="control">
       <%= f.submit submit_label, class: "button is-success is-dark" %>

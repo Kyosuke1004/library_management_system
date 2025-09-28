@@ -38,6 +38,29 @@ class BookTest < BookBaseTest
     book = Book.new(title: 'No Author Book', isbn: '9999999999', published_year: 2024, publisher: 'テスト出版', authors: [])
     assert_not book.valid?
   end
+
+  test 'adjust_book_items_stock increases book_items when stock_count is increased' do
+    @book.stock_count = 3
+    @book.save!
+    assert_equal 3, @book.book_items.count
+  end
+
+  test 'adjust_book_items_stock decreases book_items when stock_count is decreased' do
+    5.times { @book.book_items.create! }
+    @book.stock_count = 2
+    @book.save!
+    assert_equal 2, @book.book_items.count
+  end
+
+  test 'adjust_book_items_stock does not delete borrowed book_items' do
+    item1 = @book.book_items.create!
+    item2 = @book.book_items.create!
+    Loan.create!(user: @user, book_item: item1, borrowed_at: Time.current)
+    @book.stock_count = 1
+    @book.save!
+    assert_equal 1, @book.book_items.count
+    assert @book.book_items.exists?(item1.id)
+  end
 end
 
 class BookAssociationTest < BookBaseTest

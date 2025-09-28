@@ -14,8 +14,10 @@ class Book < ApplicationRecord
 
   # 仮想属性
   attr_accessor :author_names
+  attr_accessor :stock_count
 
   before_validation :assign_authors_from_names
+  after_save :adjust_book_items_stock, if: -> { stock_count.present? }
 
   scope :search_by_title_or_author, lambda { |search_term|
     return all if search_term.blank?
@@ -56,5 +58,18 @@ class Book < ApplicationRecord
     Author.find_or_create_by!(name: name)
   rescue ActiveRecord::RecordNotUnique
     Author.find_by!(name: name)
+  end
+
+  def adjust_book_items_stock
+    desired = stock_count.to_i
+    current = book_items.count
+
+    if desired > current
+      (desired - current).times { book_items.create! }
+    elsif desired < current
+      # 未貸出のBookItemのみ削除
+      removable = book_items.where.missing(:loans).limit(current - desired)
+      removable.each(&:destroy)
+    end
   end
 end
