@@ -1,18 +1,20 @@
 ```mermaid
 erDiagram
     users ||--o{ loans : "users.id = loans.user_id"
-    books ||--o{ loans : "books.id = loans.book_id"
+    books ||--o{ book_items : "books.id = book_items.book_id"
+    book_items ||--o{ loans : "book_items.id = loans.book_item_id"
     books ||--|{ authorships : "books.id = authorships.book_id"
     authors ||--|{ authorships : "authors.id = authorships.author_id"
-    
+
     users {
         int id PK
         string email
         string encrypted_password
+        int role
         datetime created_at
         datetime updated_at
     }
-    
+
     books {
         int id PK
         string title
@@ -22,24 +24,31 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
-    
+
+    book_items {
+        int id PK
+        int book_id FK "→ books.id"
+        datetime created_at
+        datetime updated_at
+    }
+
     authors {
         int id PK
         string name
         datetime created_at
         datetime updated_at
     }
-    
+
     loans {
         int id PK
         int user_id FK "→ users.id"
-        int book_id FK "→ books.id"
+        int book_item_id FK "→ book_items.id"
         datetime borrowed_at
         datetime returned_at
         datetime created_at
         datetime updated_at
     }
-    
+
     authorships {
         int id PK
         int book_id FK "→ books.id"

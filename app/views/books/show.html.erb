@@ -6,6 +6,14 @@
   <p>出版社: <%= @book.publisher %></p>
   <p>出版年: <%= @book.published_year %></p>
   <p>ISBN: <%= @book.isbn %></p>
+  <p>
+    <strong>状態:</strong>
+    <% if @book.available? %>
+      貸出可能
+    <% else %>
+      貸出中
+    <% end %>
+  </p>
   <p><strong>在庫数:</strong> <%= @book.book_items.count %> 冊</p>
   <p><strong>在庫一覧:</strong></p>
   <ul>
@@ -15,21 +23,26 @@
         <% if item.loans.currently_borrowed.any? %>
           <% current_loan = item.loans.currently_borrowed.first %>
           <span class="has-text-danger">貸出中</span>
-          <% if current_user&.admin? && current_loan.user != current_user %>
-            <!-- 管理者が他のユーザーの本を返却するケース(強制返却) -->
-            <span>（<%= current_loan.user.email %>）</span>
-            <%= button_to '強制返却', loan_path(current_loan), method: :patch,
-              params: { force: true },
-              class: "button is-danger is-light is-small",
-              data: { turbo_confirm: '本当に強制返却しますか？' } %>
-          <% elsif current_loan.user == current_user %>
-            <!-- 管理者含む自分が借りている本を返却するケース(通常返却) -->
-            <%= button_to '返却', loan_path(current_loan), method: :patch,
-              class: "button is-link is-light is-small" %>
+          <% if user_signed_in? %>
+            <% if current_user.admin? && current_loan.user != current_user %>
+              <!-- 管理者による強制返却 -->
+              <span>（<%= current_loan.user.email %>）</span>
+              <%= button_to '強制返却', loan_path(current_loan), method: :patch,
+                params: { force: true },
+                class: "button is-danger is-light is-small",
+                data: { turbo_confirm: '本当に強制返却しますか？' } %>
+            <% elsif current_loan.user == current_user %>
+              <!-- 自分の返却 -->
+              <%= button_to '返却', loan_path(current_loan), method: :patch,
+                class: "button is-link is-light is-small" %>
+            <% end %>
           <% end %>
         <% else %>
-          <%= button_to '貸出', loans_path(book_item_id: item.id), method: :post,
-            class: "button is-primary is-light is-small" %>
+          <% if user_signed_in? %>
+            <!-- ログインしている人だけ貸出可能 -->
+            <%= button_to '貸出', loans_path(book_item_id: item.id), method: :post,
+              class: "button is-primary is-light is-small" %>
+          <% end %>
         <% end %>
       </li>
     <% end %>
