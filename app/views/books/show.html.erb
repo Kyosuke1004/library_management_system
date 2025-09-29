@@ -6,6 +6,13 @@
   <p>出版社: <%= @book.publisher %></p>
   <p>出版年: <%= @book.published_year %></p>
   <p>ISBN: <%= @book.isbn %></p>
+  <p><strong>タグ:</strong>
+    <% if @book.tags.any? %>
+      <%= @book.tags.map(&:name).join(', ') %>
+    <% else %>
+      <span class="has-text-grey">タグなし</span>
+    <% end %>
+  </p>
   <p>
     <strong>状態:</strong>
     <% if @book.available? %>

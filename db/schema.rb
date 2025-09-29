@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_28_090000) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_29_050026) do
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -53,6 +53,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_28_090000) do
     t.index ["user_id"], name: "index_loans_on_user_id"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.integer "book_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["book_id"], name: "index_taggings_on_book_id"
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_tags_on_name", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -71,4 +87,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_28_090000) do
   add_foreign_key "book_items", "books"
   add_foreign_key "loans", "book_items"
   add_foreign_key "loans", "users"
+  add_foreign_key "taggings", "books"
+  add_foreign_key "taggings", "tags"
 end

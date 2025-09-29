@@ -6,6 +6,9 @@ class Book < ApplicationRecord
   has_many :authorships, dependent: :destroy # 本が削除されたときに関連する著者情報も削除
   has_many :authors, through: :authorships # 本の著者を取得するための関連付け
 
+  has_many :taggings, dependent: :destroy # 本が削除されたときに関連するタグ付けも削除
+  has_many :tags, through: :taggings # 本のタグを取得するための関連付け
+
   validates :title, presence: true
   validates :isbn, presence: true
   validates :published_year, presence: true
@@ -13,10 +16,12 @@ class Book < ApplicationRecord
   validates :authors, presence: true
 
   # 仮想属性
-  attr_accessor :author_names
-  attr_accessor :stock_count
+  attr_accessor :author_names, :stock_count, :tag_names
 
-  before_validation :assign_authors_from_names
+  # 入力された author_names / tag_names から関連を作成
+  before_validation -> { assign_names(:authors, author_names) }
+  before_validation -> { assign_names(:tags, tag_names) }
+
   after_save :adjust_book_items_stock, if: -> { stock_count.present? }
 
   scope :search_by_title_or_author, lambda { |search_term|
@@ -36,14 +41,17 @@ class Book < ApplicationRecord
 
   private
 
-  def assign_authors_from_names
-    return unless author_names.present?
+  def assign_names(association, raw_names)
+    return if raw_names.blank?
 
-    names = normalize_author_names(author_names)
-    self.authors = names.map { |name| find_or_create_author(name) }
+    names = normalize_names(raw_names)
+    public_send("#{association}=", names.map { |name| find_or_create_record(association, name) })
   end
 
-  def normalize_author_names(names)
+  # 入力を正規化
+  # - String の場合: カンマや改行で分割 → strip → 重複除去
+  # - Array の場合: strip → 重複除去
+  def normalize_names(names)
     case names
     when String
       names.split(/[,\n]/).map(&:strip).compact_blank.uniq
@@ -54,10 +62,12 @@ class Book < ApplicationRecord
     end
   end
 
-  def find_or_create_author(name)
-    Author.find_or_create_by!(name: name)
-  rescue ActiveRecord::RecordNotUnique
-    Author.find_by!(name: name)
+  # Author や Tag を find_or_create
+  def find_or_create_record(association, name)
+    klass = association.to_s.singularize.classify.constantize
+    klass.find_or_create_by!(name: name)
+  rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
+    klass.find_by!(name: name)
   end
 
   def adjust_book_items_stock

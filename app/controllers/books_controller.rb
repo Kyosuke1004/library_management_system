@@ -20,10 +20,12 @@ class BooksController < ApplicationController
 
   def create
     @book = Book.new(book_params)
+    @book.tags = Tag.where(id: Array(params[:book][:tag_ids]).compact_blank)
     save_book_and_redirect(@book, :new)
   end
 
   def update
+    @book.tags = Tag.where(id: Array(params[:book][:tag_ids]).compact_blank)
     @book.assign_attributes(book_params)
     save_book_and_redirect(@book, :edit)
   end
@@ -52,7 +54,9 @@ class BooksController < ApplicationController
                                  :publisher,
                                  :author_names,
                                  :stock_count,
-                                 author_ids: [])
+                                 :tag_names,
+                                 author_ids: [],
+                                 tag_ids: [])
   end
 
   def save_book_and_redirect(book, render_action)

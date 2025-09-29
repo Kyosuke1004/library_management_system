@@ -55,6 +55,24 @@
       <p class="help is-danger"><%= book.errors[:isbn].first %></p>
     <% end %>
   </div>
+  <div class="field mt-2">
+    <label class="label">既存タグ</label>
+    <div class="control">
+      <% Tag.all.each do |tag| %>
+        <label class="checkbox mr-2">
+          <%= check_box_tag "book[tag_ids][]", tag.id, book.tags.include?(tag) %>
+          <%= tag.name %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+  <div class="field mt-2">
+    <label class="label">新規タグ（複数登録はカンマ区切り）</label>
+    <div class="control">
+      <%= f.text_area :tag_names, rows: 1, class: "input", placeholder: "例: 技術書, 小説" %>
+    </div>
+    <p class="help">新しいタグをカンマ区切りで入力してください</p>
+  </div>
   <div class="field mt-2" data-controller="stock-counter">
     <label class="label">在庫数</label>
     <div class="control" style="display: flex; align-items: center; gap: 8px;">
