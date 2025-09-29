@@ -13,15 +13,23 @@
       <li class="is-flex is-align-items-center" style="gap: 10px;">
         <span>在庫ID: <%= item.id %></span>
         <% if item.loans.currently_borrowed.any? %>
-          <span class="has-text-danger">貸出中</span>
           <% current_loan = item.loans.currently_borrowed.first %>
-          <% if current_loan&.user == current_user %>
+          <span class="has-text-danger">貸出中</span>
+          <% if current_user&.admin? && current_loan.user != current_user %>
+            <!-- 管理者が他のユーザーの本を返却するケース(強制返却) -->
+            <span>（<%= current_loan.user.email %>）</span>
+            <%= button_to '強制返却', loan_path(current_loan), method: :patch,
+              params: { force: true },
+              class: "button is-danger is-light is-small",
+              data: { turbo_confirm: '本当に強制返却しますか？' } %>
+          <% elsif current_loan.user == current_user %>
+            <!-- 管理者含む自分が借りている本を返却するケース(通常返却) -->
             <%= button_to '返却', loan_path(current_loan), method: :patch,
-                      class: "button is-link is-light is-small" %>
+              class: "button is-link is-light is-small" %>
           <% end %>
         <% else %>
           <%= button_to '貸出', loans_path(book_item_id: item.id), method: :post,
-                    class: "button is-primary is-light is-small" %>
+            class: "button is-primary is-light is-small" %>
         <% end %>
       </li>
     <% end %>

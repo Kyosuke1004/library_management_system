@@ -23,7 +23,7 @@ class LoansController < ApplicationController
   def update
     loan = Loan.find(params[:id])
     book = loan.book_item.book
-    if loan.user == current_user && loan.returned_at.nil?
+    if (loan.user == current_user && loan.returned_at.nil?) || (current_user.admin? && params[:force])
       loan.update(returned_at: Time.current)
       redirect_to book, notice: '本を返却しました。'
     else
