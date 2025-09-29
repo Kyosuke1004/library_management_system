@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   root "books#index"
   devise_for :users
   resources :books
-  resources :loans
+  resources :loans, only: [:create, :update]
   resources :authors, only: [] do
     collection do
       get :autocomplete

@@ -7,25 +7,26 @@
   <p>出版年: <%= @book.published_year %></p>
   <p>ISBN: <%= @book.isbn %></p>
   <p><strong>在庫数:</strong> <%= @book.book_items.count %> 冊</p>
-  <p>
-    <strong>状態:</strong>
-    <% if @book.available? %>
-      貸出可能
-    <% else %>
-      貸出中
-    <% end %>
-  </p>
-  <div class="buttons mt-4">
-    <% if user_signed_in? %>
-      <% if @book.available? %>
-        <%= button_to '貸出', loans_path(book_id: @book.id), method: :post, class: "button is-primary is-light" %>
-      <% else %>
-        <% current_loan = @book.loans.currently_borrowed.first %>
-        <% if current_loan&.user == current_user %>
-          <%= button_to '返却', loan_path(current_loan), method: :patch, class: "button is-link is-light" %>
+  <p><strong>在庫一覧:</strong></p>
+  <ul>
+    <% @book.book_items.each do |item| %>
+      <li class="is-flex is-align-items-center" style="gap: 10px;">
+        <span>在庫ID: <%= item.id %></span>
+        <% if item.loans.currently_borrowed.any? %>
+          <span class="has-text-danger">貸出中</span>
+          <% current_loan = item.loans.currently_borrowed.first %>
+          <% if current_loan&.user == current_user %>
+            <%= button_to '返却', loan_path(current_loan), method: :patch,
+                      class: "button is-link is-light is-small" %>
+          <% end %>
+        <% else %>
+          <%= button_to '貸出', loans_path(book_item_id: item.id), method: :post,
+                    class: "button is-primary is-light is-small" %>
         <% end %>
-      <% end %>
+      </li>
     <% end %>
+  </ul>
+  <div class="buttons mt-4">
     <%= link_to '一覧に戻る', books_path, class: "button is-light" %>
     <% if current_user&.admin? %>
       <%= link_to '編集', edit_book_path(@book), class: "button is-warning is-light" %>
