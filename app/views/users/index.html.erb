@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="columns is-mobile is-justify-content-right mb-4">
+    <div class="column is-half">
+      <%= render 'shared/search_form', url: users_path, placeholder: 'メールアドレスで検索', value: params[:search], clear_path: users_path %>
+    </div>
+  </div>
+  <h1 class="title is-4">ユーザー一覧</h1>
+  <table class="table is-striped is-fullwidth">
+    <thead>
+      <tr>
+        <th>ユーザー名</th>
+        <th>権限</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td>
+            <%= link_to user.email, user_loans_path(user), class: "has-text-link" %>
+          </td>
+          <td>
+            <% if user.admin? %>
+              <span class="tag is-info">管理者</span>
+            <% else %>
+              <span class="tag is-light">一般</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

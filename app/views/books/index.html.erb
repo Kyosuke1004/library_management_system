@@ -11,22 +11,7 @@
     <% end %>
   </div>
   <div class="column is-half">
-    <%= form_with url: books_path, method: :get, local: true, html: {class: "field has-addons is-justify-content-right"} do |f| %>
-      <div class="control">
-        <%= f.text_field :search, 
-            placeholder: 'タイトル/著者名で検索',
-            value: params[:search],
-            class: "input" %>
-      </div>
-      <div class="control">
-        <%= f.submit '検索', class: "button custom-search-button" %>
-      </div>
-      <% if params[:search].present? %>
-        <div class="control">
-          <%= link_to 'クリア', books_path, class: "button is-light" %>
-        </div>
-      <% end %>
-    <% end %>
+    <%= render 'shared/search_form', url: books_path, placeholder: 'タイトル/著者名で検索', value: params[:search], clear_path: books_path %>
   </div>
 </div>
 <div class='columns is-multiline'>

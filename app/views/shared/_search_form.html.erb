@@ -1,0 +1,16 @@
+<%= form_with url: url, method: :get, local: true, html: {class: "field has-addons is-justify-content-right"} do |f| %>
+  <div class="control">
+    <%= f.text_field :search,
+        placeholder: placeholder,
+        value: value,
+        class: "input" %>
+  </div>
+  <div class="control">
+    <%= f.submit '検索', class: "button custom-search-button" %>
+  </div>
+  <% if value.present? %>
+    <div class="control">
+      <%= link_to 'クリア', clear_path, class: "button is-light" %>
+    </div>
+  <% end %>
+<% end %>

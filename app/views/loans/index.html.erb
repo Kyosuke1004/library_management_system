@@ -1,0 +1,31 @@
+<div class="container">
+  <h1 class="title is-4">貸出履歴</h1>
+  <table class="table is-striped is-fullwidth">
+    <thead>
+      <tr>
+        <th>書籍タイトル</th>
+        <th>貸出日</th>
+        <th>返却日</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @loans.each do |loan| %>
+        <tr>
+          <td>
+            <a href="<%= book_path(loan.book_item.book) %>">
+              <%= loan.book_item.book.title %>
+            </a>
+          </td>
+          <td><%= loan.borrowed_at.strftime('%Y-%m-%d') %></td>
+          <td>
+            <% if loan.returned_at.present? %>
+              <%= loan.returned_at.strftime('%Y-%m-%d') %>
+            <% else %>
+              <span class="tag is-danger">未返却</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

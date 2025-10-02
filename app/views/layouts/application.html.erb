@@ -27,6 +27,10 @@
             <div class="navbar-item">
               こんにちは、<%= current_user.email %>さん
             </div>
+            <% if current_user.admin? %>
+              <%= link_to 'ユーザー一覧', users_path, class: "navbar-item" %>
+            <% end %>
+            <%= link_to '貸出履歴', user_loans_path(current_user), class: "navbar-item" %>
             <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: "navbar-item" %>
           <% else %>
             <%= link_to 'ログイン', new_user_session_path, class: "navbar-item" %>

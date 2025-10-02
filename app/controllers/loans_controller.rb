@@ -1,6 +1,15 @@
 class LoansController < ApplicationController
   before_action :authenticate_user!
 
+  def index
+    @user = User.find(params[:user_id])
+    if current_user != @user && !current_user.admin?
+      redirect_to root_path, alert: '他のユーザーの貸出履歴は閲覧できません。'
+    else
+      @loans = @user.loans.includes(book_item: :book).order(borrowed_at: :desc)
+    end
+  end
+
   def create
     book_item = BookItem.find(params[:book_item_id])
     book = book_item.book
