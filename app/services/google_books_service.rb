@@ -1,3 +1,7 @@
+require 'net/http'
+require 'uri'
+require 'json'
+
 class GoogleBooksService
   API_ENDPOINT = 'https://www.googleapis.com/books/v1/volumes'
 
