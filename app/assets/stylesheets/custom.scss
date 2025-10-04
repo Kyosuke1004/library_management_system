@@ -1,76 +1,96 @@
-// ナビバーのカスタムカラー設定
+// -----------------------------
+// カラー変数
+// -----------------------------
+$primary-bg: #074309;
+$primary-text: #fff;
+$primary-hover-bg: #00300b;
+$primary-hover-text: #fff;
+
+$card-hover-bg: #f5f5f5;
+$card-hover-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+// -----------------------------
+// Navbar
+// -----------------------------
 .navbar.custom-navbar {
-  background-color: #074309; // ナビバーの背景色
-  color: #fff;               // ナビバー内の文字色
-}
+  background-color: $primary-bg;
+  color: $primary-text;
 
-// ナビバー内のリンク・アイテムの文字色
-.navbar.custom-navbar .navbar-item,
-.navbar.custom-navbar .navbar-link {
-  color: #fff; // テキスト色を白に設定
-}
+  .navbar-item,
+  .navbar-link {
+    color: $primary-text;
 
-// ホバー時の色を変更
-.navbar.custom-navbar .navbar-item:hover {
-  color: #d4edda; // ホバー時の色を明るい色に設定
-}
+    &:hover {
+      background-color: $primary-hover-bg;
+      color: $primary-hover-text;
+    }
+  }
 
-// 検索ボタンのカラー設定
-.button.custom-search-button {
-  background-color: #074309; // ボタンの背景色
-  color: #fff;               // ボタンの文字色
-  border: none;              // ボタンの境界線をなしに設定
-}
+  .navbar-menu,
+  .navbar-dropdown {
+    background-color: $primary-bg;
+    color: $primary-text;
+  }
 
-// カードのホバー時のデザイン
-.card:hover {
-  background-color: #f5f5f5;                       // ホバー時の背景色
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);         // ホバー時の影
-  cursor: pointer;                                 // ポインター表示
-}
+  .navbar-burger {
+    background-color: $primary-bg;
+    color: $primary-hover-text;
+  }
 
-// オーサーサジェストのスタイル
-#author-suggestions {
-  max-height: 240px;
-  overflow-y: auto;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-#author-suggestions .menu-item:hover {
-  background: #f0f0f0;
-}
+  .navbar-item.has-dropdown {
+    &.is-active > .navbar-link,
+    &.is-hoverable:hover > .navbar-link {
+      background-color: $primary-hover-bg;
+      color: $primary-hover-text;
+    }
+  }
 
-// ハンバーガーメニューの設定
-// ハンバーガーメニューが開いたときの背景色
-.navbar-menu {
-  background-color: #074309; // ハンバーガーメニューの背景色をナビバーと同じ色に設定
-}
-.navbar-burger {
-  background-color: #074309; // ナビゲーションバーの背景色をナビバーと同じ色に設定
-  color: #fff; // ハンバーガーメニューのアイコン色を白に設定
-}
-
-.navbar-item {
-  color: #333; // テキスト色を変更
-  &:hover {
-    color: #007bff; // ホバー時の色を変更
+  // hover 無効化したアイテム
+  .navbar-item.no-hover:hover {
+    background-color: transparent;
+    color: $primary-text;
+    cursor: default;
   }
 }
 
+// -----------------------------
+// Buttons
+// -----------------------------
+.button.custom-search-button {
+  background-color: $primary-bg;
+  color: $primary-text;
+  border: none;
+}
+
+// -----------------------------
+// Card Hover Effect
+// -----------------------------
+.card:hover {
+  background-color: $card-hover-bg;
+  box-shadow: $card-hover-shadow;
+  cursor: pointer;
+}
+
+// -----------------------------
+// Author Suggestions
+// -----------------------------
+#author-suggestions {
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  .menu-item:hover {
+    background: #f0f0f0;
+  }
+}
+
+// -----------------------------
+// Notifications
+// -----------------------------
 .notification {
-  margin-bottom: 1rem; // 通知メッセージの下に余白を追加
-}
+  margin-bottom: 1rem;
 
-.notification.is-success {
-  background-color: #d4edda; // 成功メッセージの背景色
-  color: #155724; // 成功メッセージのテキスト色
-}
-
-.notification.is-danger {
-  background-color: #f8d7da; // エラーメッセージの背景色
-  color: #721c24; // エラーメッセージのテキスト色
-}
-
-.notification.is-info {
-  background-color: #d1ecf1; // 情報メッセージの背景色
-  color: #0c5460; // 情報メッセージのテキスト色
+  &.is-success   { background-color: #d4edda; color: #155724; }
+  &.is-danger    { background-color: #f8d7da; color: #721c24; }
+  &.is-info      { background-color: #d1ecf1; color: #0c5460; }
 }

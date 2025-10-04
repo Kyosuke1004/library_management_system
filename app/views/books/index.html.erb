@@ -1,17 +1,32 @@
+<h1 class="title is-3 mb-4">図書一覧</h1>
+<% if params[:search].present? %>
+  <p class="mt-2 has-text-grey has-text-centered">
+    「<%= params[:search] %>」の検索結果: <%= @books.count %>件
+  </p>
+<% end %>
+<div class="is-centered mb-4">
+  <%= render 'shared/search_form', url: books_path, placeholder: 'タイトル/著者名で検索', value: params[:search], clear_path: books_path, input_class: 'input is-large' %>
+</div>
 <div class="columns is-vcentered mb-4">
   <div class="column is-half">
-    <h1 class="title is-3">図書一覧</h1>
-    <% if params[:search].present? %>
-      <p class="mt-2 has-text-grey">
-        「<%= params[:search] %>」の検索結果: <%= @books.count %>件
-      </p>
-    <% end %>
     <% if current_user&.admin? %>
-      <%= link_to '新規作成', new_book_path, class: "button is-primary mt-3" %>
+      <%= link_to '新規作成', new_book_path, class: "button is-primary" %>
     <% end %>
   </div>
-  <div class="column is-half">
-    <%= render 'shared/search_form', url: books_path, placeholder: 'タイトル/著者名で検索', value: params[:search], clear_path: books_path %>
+  <div class="column is-half has-text-right">
+    <div class="field">
+      <div class="control">
+        <div class="select">
+          <select id="sort-select" onchange="location.href=this.value;">
+            <option value="<%= books_path(search: params[:search]) %>" <%= params[:sort].blank? ? 'selected' : '' %>>新着順</option>
+            <option value="<%= books_path(sort: 'title_asc', search: params[:search]) %>" <%= params[:sort] == 'title_asc' ? 'selected' : '' %>>タイトル昇順</option>
+            <option value="<%= books_path(sort: 'title_desc', search: params[:search]) %>" <%= params[:sort] == 'title_desc' ? 'selected' : '' %>>タイトル降順</option>
+            <option value="<%= books_path(sort: 'published_year_asc', search: params[:search]) %>" <%= params[:sort] == 'published_year_asc' ? 'selected' : '' %>>出版年昇順</option>
+            <option value="<%= books_path(sort: 'published_year_desc', search: params[:search]) %>" <%= params[:sort] == 'published_year_desc' ? 'selected' : '' %>>出版年降順</option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class='columns is-multiline'>

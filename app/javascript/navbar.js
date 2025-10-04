@@ -1,4 +1,4 @@
-// app/javascript/navbar.js
+console.log('application.js loaded');
 export function setupNavbar() {
   const burger = document.querySelector('.navbar-burger');
   const menu = document.querySelector('#navbarBasicExample');

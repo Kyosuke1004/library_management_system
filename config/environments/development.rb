@@ -62,6 +62,16 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  Rails.application.configure do
+    config.assets.debug   = true
+    config.assets.compile = true
+    config.assets.digest  = true
+
+    config.public_file_server.headers = {
+      'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate'
+    }
+  end
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 

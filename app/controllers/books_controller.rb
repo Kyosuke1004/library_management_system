@@ -5,6 +5,18 @@ class BooksController < ApplicationController
 
   def index
     @books = Book.search_by_title_or_author(params[:search])
+    @books = case params[:sort]
+             when 'title_asc'
+               @books.order(title: :asc)
+             when 'title_desc'
+               @books.order(title: :desc)
+             when 'published_year_asc'
+               @books.order(published_year: :asc)
+             when 'published_year_desc'
+               @books.order(published_year: :desc)
+             else
+               @books.order(created_at: :desc)
+             end
   end
 
   def show
