@@ -20,6 +20,7 @@ class BooksController < ApplicationController
 
   def create
     @book = Book.new(book_params)
+    @book.image_url = image_url_from_isbn(@book.isbn)
     @book.tags = Tag.where(id: Array(params[:book][:tag_ids]).compact_blank)
     save_book_and_redirect(@book, :new)
   end
@@ -27,6 +28,7 @@ class BooksController < ApplicationController
   def update
     @book.tags = Tag.where(id: Array(params[:book][:tag_ids]).compact_blank)
     @book.assign_attributes(book_params)
+    @book.image_url = image_url_from_isbn(@book.isbn)
     save_book_and_redirect(@book, :edit)
   end
 
@@ -66,5 +68,15 @@ class BooksController < ApplicationController
       flash.now[:alert] = '保存に失敗しました。入力内容を確認してください。'
       render render_action, status: :unprocessable_content
     end
+  end
+
+  def image_url_from_isbn(isbn)
+    return if isbn.blank?
+
+    result = GoogleBooksService.fetch_by_isbn(isbn)
+    Rails.logger.info("GoogleBooksService.fetch_by_isbnレスポンス: #{result.inspect}")
+    image_url = result&.dig(:image_url)
+    Rails.logger.info("image_url_from_isbnの戻り値: #{image_url}")
+    image_url
   end
 end

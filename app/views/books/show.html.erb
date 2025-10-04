@@ -1,7 +1,12 @@
 <h1 class="title is-4 mb-4">本の詳細</h1>
 <div class="box">
-  <p class="title is-4"><%= @book.title %></p>
-  <p class="subtitle is-6">著者: <%= @book.authors.map(&:name).join(', ') %></p>
+  <div class="is-flex is-align-items-center mb-3" style="gap: 20px;">
+    <%= render 'book_image', book: @book %>
+    <div>
+      <p class="title is-4"><%= @book.title %></p>
+      <p class="subtitle is-6">著者: <%= @book.authors.map(&:name).join(', ') %></p>
+    </div>
+  </div>
   <hr>
   <p>出版社: <%= @book.publisher %></p>
   <p>出版年: <%= @book.published_year %></p>
