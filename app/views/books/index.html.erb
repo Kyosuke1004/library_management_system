@@ -18,6 +18,9 @@
   <% @books.each do |book| %>
     <div class='column is-one-third'>
       <%= link_to book_path(book), class: "card", style: "display:block; text-decoration:none; color:inherit" do %>
+        <div class="has-text-centered pt-4">
+          <%= render 'book_image', book: book %>
+        </div>
         <div class="card-content">
           <h2 class="title is-5"><%= book.title %></h2>
           <p class="subtitle is-6"><%= book.authors.map(&:name).join(', ') %></p>

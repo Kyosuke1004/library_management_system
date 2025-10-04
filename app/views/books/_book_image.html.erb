@@ -1,0 +1,7 @@
+<% if book.image_url.present? %>
+  <div class="has-text-centered">
+    <figure class="image is-128x128" style="margin: 0 auto;">
+      <img src="<%= book.image_url %>" alt="<%= book.title %>" style="max-height:128px; max-width:100%; object-fit:contain;">
+    </figure>
+  </div>
+<% end %>
