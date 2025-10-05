@@ -1,6 +1,7 @@
-# require を削除し、plugins のみ使用
 plugins:
   - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 3.2

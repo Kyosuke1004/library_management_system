@@ -33,7 +33,10 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     patch book_url(@book),
-          params: { book: { title: '更新タイトル', isbn: @book.isbn, published_year: @book.published_year, publisher: @book.publisher,
+          params: { book: { title: '更新タイトル',
+                            isbn: @book.isbn,
+                            published_year: @book.published_year,
+                            publisher: @book.publisher,
                             author_ids: [@author.id], author_names: '追加著者' } }
     assert_redirected_to book_url(@book)
     @book.reload
@@ -71,7 +74,10 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     assert_match '管理者のみ操作可能です。', response.body
 
     patch book_url(@book),
-          params: { book: { title: '更新タイトル', isbn: @book.isbn, published_year: @book.published_year, publisher: @book.publisher,
+          params: { book: { title: '更新タイトル',
+                            isbn: @book.isbn,
+                            published_year: @book.published_year,
+                            publisher: @book.publisher,
                             author_ids: [@author.id] } }
     assert_redirected_to books_url
     follow_redirect!
