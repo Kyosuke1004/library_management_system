@@ -19,10 +19,16 @@
     <% end %>
   </div>
   <div class="field mt-2">
-    <label class="label">著者（複数著者はカンマ区切り）</label>
-    <div class="control" style="position: relative;">
-      <%= f.text_area :author_names, rows: 2, class: "input#{' is-danger' if book.errors[:authors].any?}", id: "author-input", autocomplete: "off", value: book.authors.map(&:name).join(', ') %>
-      <div id="author-suggestions"></div>
+    <label class="label">著者</label>
+    <div class="no-bulma" style="position: relative;">
+      <%= f.text_field :author_names,
+        class: "no-bulma tagify--outside input#{' is-danger' if book.errors[:authors].any?}",
+        id: "author-input",
+        name: "book[author_names]",
+        value: book.authors.map(&:name).join(', ') %>
+      <p class="help" style="margin-top: 4px;">
+        既存著者は入力して候補から選択、新規著者は入力後にEnterで追加できます。
+      </p>
     </div>
     <% if book.errors[:authors].any? %>
       <p class="help is-danger"><%= book.errors[:authors].first %></p>
