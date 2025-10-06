@@ -41,8 +41,9 @@ end
 class UserAssociationTest < UserBaseTest
   def setup
     super
-    @auth = Author.create!(name: 'テスト著者')
-    @book = Book.new(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@auth])
+    @auth = Author.create!(name: "テスト著者_#{SecureRandom.hex(4)}")
+    @book = Book.new(title: 'テスト本', isbn: SecureRandom.hex(8), published_year: 2024, publisher: 'テスト出版',
+                     authors: [@auth])
     @user.save!
     @book.save!
     @book_item = @book.book_items.create!

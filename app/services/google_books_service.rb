@@ -24,13 +24,11 @@ class GoogleBooksService
     ca_file = ENV.fetch('SSL_CA_FILE', nil)
     http.ca_file = ca_file if ca_file.present?
 
-    if Rails.env.development?
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      # CRL検証を無効化（開発環境のみ）
-      http.verify_callback = proc { true }
-    else
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-    end
+    http.verify_mode = if Rails.env.production?
+                         OpenSSL::SSL::VERIFY_PEER
+                       else
+                         OpenSSL::SSL::VERIFY_NONE
+                       end
 
     request = Net::HTTP::Get.new(uri.request_uri)
     request['User-Agent'] = 'curl/7.64.1'

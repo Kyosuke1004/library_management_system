@@ -3,8 +3,9 @@ require 'test_helper'
 class LoanTest < ActiveSupport::TestCase
   def setup
     @user = User.create!(email: 'test@example.com', password: 'password')
-    @auth = Author.create!(name: 'テスト著者')
-    @book = Book.create!(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版', authors: [@auth])
+    @auth = Author.create!(name: "テスト著者_#{SecureRandom.hex(4)}")
+    @book = Book.create!(title: 'テスト本', isbn: SecureRandom.hex(8), published_year: 2024, publisher: 'テスト出版',
+                         authors: [@auth])
     @book_item = BookItem.create!(book: @book)
     @loan = Loan.new(user: @user, book_item: @book_item, borrowed_at: Time.current)
   end

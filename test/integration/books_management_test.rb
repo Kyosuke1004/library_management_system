@@ -4,8 +4,10 @@ class BooksManagementTest < ActionDispatch::IntegrationTest
   def setup
     @admin = users(:admin)
     @general = users(:user)
-    @author = Author.create!(name: '共通著者')
-    @book = Book.create!(title: '共通本', isbn: '1234567890', published_year: 2024, publisher: '共通出版', authors: [@author])
+    @author = Author.create!(name: "共通著者_#{SecureRandom.hex(4)}")
+    @book = Book.create!(title: '共通本', isbn: SecureRandom.hex(8), published_year: 2024, publisher: '共通出版',
+                         authors: [@author])
+    stub_google_books_api
   end
 
   def login(user)

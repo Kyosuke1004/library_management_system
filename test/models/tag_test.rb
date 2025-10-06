@@ -21,8 +21,8 @@ class TagTest < ActiveSupport::TestCase
   end
 
   test 'should have many books through taggings' do
-    book = Book.create!(title: 'テスト本', isbn: '1234567890', published_year: 2024, publisher: 'テスト出版',
-                        authors: [Author.create!(name: '著者')])
+    book = Book.create!(title: 'テスト本', isbn: SecureRandom.hex(8), published_year: 2024, publisher: 'テスト出版',
+                        authors: [Author.create!(name: "著者_#{SecureRandom.hex(4)}")])
     @tag.save!
     book.tags << @tag
     assert_includes @tag.books, book

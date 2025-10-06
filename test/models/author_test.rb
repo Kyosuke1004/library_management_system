@@ -19,10 +19,10 @@ end
 # 関連付けテスト用の別クラス
 class AuthorAssociationTest < ActiveSupport::TestCase
   def setup
-    @author = Author.create!(name: 'テスト著者')
+    @author = Author.create!(name: "テスト著者_#{SecureRandom.hex(4)}")
     @book = Book.create!(
       title: 'テスト本',
-      isbn: '1234567890',
+      isbn: SecureRandom.hex(8),
       published_year: 2024,
       publisher: 'テスト出版',
       authors: [@author]

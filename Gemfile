@@ -40,6 +40,7 @@ group :test do
   gem 'minitest-reporters'
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'
+  gem 'webmock'
 end
 
 group :production do

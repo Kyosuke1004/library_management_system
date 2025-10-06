@@ -10,6 +10,7 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     @book = books(:book)
     @ruby_book = books(:ruby_book)
     @java_book = books(:java_book)
+    stub_google_books_api
   end
 
   # === 一般・管理者のアクセス権限テスト ===

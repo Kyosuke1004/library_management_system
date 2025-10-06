@@ -14,10 +14,31 @@ module ActiveSupport
 
     self.use_transactional_tests = true
 
-    # Add more helper methods to be used by all tests here...
+    # Google Books APIスタブ用ヘルパー
+    def stub_google_books_api
+      stub_request(:get, /www.googleapis.com/).to_return(
+        status: 200,
+        body: {
+          items: [
+            {
+              volumeInfo: {
+                title: 'ダミー本',
+                authors: ['ダミー著者'],
+                imageLinks: { thumbnail: 'https://dummy.example.com/image.jpg' }
+              }
+            }
+          ]
+        }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      )
+    end
   end
 end
 
 class ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 end
+
+# WebMock有効化
+require 'webmock/minitest'
+WebMock.disable_net_connect!(allow_localhost: true)

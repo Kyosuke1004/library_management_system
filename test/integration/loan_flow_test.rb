@@ -6,10 +6,10 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
   def setup
     @user1 = User.create!(email: 'user1@example.com', password: 'password')
     @user2 = User.create!(email: 'user2@example.com', password: 'password')
-    @author = Author.create!(name: 'テスト著者')
+    @author = Author.create!(name: "テスト著者_#{SecureRandom.hex(4)}")
     @book = Book.create!(
       title: 'テスト本',
-      isbn: '1111111111',
+      isbn: SecureRandom.hex(8),
       published_year: 2024,
       publisher: 'テスト出版',
       authors: [@author]
@@ -96,12 +96,13 @@ class LoanFlowTest < ActionDispatch::IntegrationTest
   # ========================================
 
   test 'multiple users can interact with different books' do
-    @author2 = Author.create!(name: '別の著者')
+    author_name = "別の著者_#{SecureRandom.hex(4)}"
+    @author2 = Author.create!(name: author_name)
     @book2 = Book.create!(
       title: 'テスト本2',
-      isbn: '2222222222',
+      isbn: SecureRandom.hex(8),
       published_year: 2024,
-      publisher: 'テスト出版',
+      publisher: 'テスト出版社',
       authors: [@author2]
     )
     @book_item2 = @book2.book_items.create!
