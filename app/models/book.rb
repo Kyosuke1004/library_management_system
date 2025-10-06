@@ -35,6 +35,16 @@ class Book < ApplicationRecord
       .distinct
   }
 
+  scope :sort_by_param, lambda { |param|
+    case param
+    when 'title_asc'          then order(title: :asc)
+    when 'title_desc'         then order(title: :desc)
+    when 'published_year_asc' then order(published_year: :asc)
+    when 'published_year_desc'then order(published_year: :desc)
+    else order(created_at: :desc)
+    end
+  }
+
   def available?
     book_items.any? && book_items.any? { |item| item.loans.currently_borrowed.empty? }
   end

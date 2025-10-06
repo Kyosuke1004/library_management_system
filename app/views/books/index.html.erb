@@ -4,8 +4,19 @@
     「<%= params[:search] %>」の検索結果: <%= @books.count %>件
   </p>
 <% end %>
+<% if @tag %>
+  <p class="mt-2 has-text-info has-text-centered">
+    「<%= @tag.name %>」タグの書籍一覧: <%= @books.count %>件
+  </p>
+  <div class="has-text-centered mb-3">
+    <%= clear_tag_button %>
+  </div>
+<% end %>
 <div class="is-centered mb-4">
   <%= render 'shared/search_form', url: books_path, placeholder: 'タイトル/著者名で検索', value: params[:search], clear_path: books_path, input_class: 'input is-large' %>
+</div>
+<div class="tag mb-4">
+  <%= tag_links %>
 </div>
 <div class="columns is-vcentered mb-4">
   <div class="column is-half">
@@ -18,11 +29,7 @@
       <div class="control">
         <div class="select">
           <select id="sort-select" onchange="location.href=this.value;">
-            <option value="<%= books_path(search: params[:search]) %>" <%= params[:sort].blank? ? 'selected' : '' %>>新着順</option>
-            <option value="<%= books_path(sort: 'title_asc', search: params[:search]) %>" <%= params[:sort] == 'title_asc' ? 'selected' : '' %>>タイトル昇順</option>
-            <option value="<%= books_path(sort: 'title_desc', search: params[:search]) %>" <%= params[:sort] == 'title_desc' ? 'selected' : '' %>>タイトル降順</option>
-            <option value="<%= books_path(sort: 'published_year_asc', search: params[:search]) %>" <%= params[:sort] == 'published_year_asc' ? 'selected' : '' %>>出版年昇順</option>
-            <option value="<%= books_path(sort: 'published_year_desc', search: params[:search]) %>" <%= params[:sort] == 'published_year_desc' ? 'selected' : '' %>>出版年降順</option>
+            <%= options_for_select(sort_select_options(tag: @tag), selected: request.fullpath) %>
           </select>
         </div>
       </div>

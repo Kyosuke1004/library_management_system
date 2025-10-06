@@ -13,7 +13,9 @@
   <p>ISBN: <%= @book.isbn %></p>
   <p><strong>タグ:</strong>
     <% if @book.tags.any? %>
-      <%= @book.tags.map(&:name).join(', ') %>
+      <% @book.tags.each do |tag| %>
+        <%= link_to tag.name, books_path(tag_id: tag.id), class: "tag is-info mr-1" %>
+      <% end %>
     <% else %>
       <span class="has-text-grey">タグなし</span>
     <% end %>
