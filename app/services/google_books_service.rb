@@ -19,6 +19,11 @@ class GoogleBooksService
     uri = URI.parse(url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
+
+    # SSL証明書の設定
+    http.ca_file = '/opt/homebrew/etc/ca-certificates/cert.pem'
+    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
     request = Net::HTTP::Get.new(uri.request_uri)
     request['User-Agent'] = 'curl/7.64.1'
     response = http.request(request)
