@@ -20,9 +20,17 @@ class GoogleBooksService
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
-    # SSL証明書の設定
-    http.ca_file = '/opt/homebrew/etc/ca-certificates/cert.pem'
-    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+    # SSL証明書の設定（環境変数でパス指定、未設定ならデフォルト）
+    ca_file = ENV.fetch('SSL_CA_FILE', nil)
+    http.ca_file = ca_file if ca_file.present?
+
+    if Rails.env.development?
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      # CRL検証を無効化（開発環境のみ）
+      http.verify_callback = proc { true }
+    else
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+    end
 
     request = Net::HTTP::Get.new(uri.request_uri)
     request['User-Agent'] = 'curl/7.64.1'
