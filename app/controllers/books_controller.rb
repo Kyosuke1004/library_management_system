@@ -8,7 +8,9 @@ class BooksController < ApplicationController
       @tag = Tag.find(params[:tag_id])
       @books = @tag.books.sort_by_param(params[:sort]).page(params[:page]).per(12)
     else
-      @books = Book.search_by_title_or_author(params[:search]).sort_by_param(params[:sort]).page(params[:page]).per(12)
+      @books = Book.search_by_title_or_author(params[:search])
+                   .sort_by_param(params[:sort])
+                   .page(params[:page]).per(12)
     end
   end
 

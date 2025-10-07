@@ -1,37 +1,44 @@
 class Book < ApplicationRecord
-  has_many :book_items, dependent: :destroy # 本が削除されたときに関連する本のアイテムも削除
-  has_many :loans, through: :book_items # 本の貸出記録を取得するための関連付け
-  has_many :users, through: :loans # 本を借りたユーザーを取得するための関連付け
+  # =====================
+  # 関連
+  # =====================
+  has_many :book_items, dependent: :destroy
+  has_many :loans, through: :book_items
+  has_many :users, through: :loans
 
-  has_many :authorships, dependent: :destroy # 本が削除されたときに関連する著者情報も削除
-  has_many :authors, through: :authorships # 本の著者を取得するための関連付け
+  has_many :authorships, dependent: :destroy
+  has_many :authors, through: :authorships
 
-  has_many :taggings, dependent: :destroy # 本が削除されたときに関連するタグ付けも削除
-  has_many :tags, through: :taggings # 本のタグを取得するための関連付け
+  has_many :taggings, dependent: :destroy
+  has_many :tags, through: :taggings
 
-  validates :title, presence: true
-  validates :isbn, presence: true
-  validates :published_year, presence: true
-  validates :publisher, presence: true
+  # =====================
+  # バリデーション
+  # =====================
+  validates :title, :isbn, :published_year, :publisher, presence: true
   validates :authors, presence: true
 
-  # 仮想属性
-  attr_accessor :author_names, :stock_count, :tag_names
+  # =====================
+  # 仮想属性（フォーム入力用）
+  # =====================
+  attr_accessor :author_names, :tag_names, :stock_count
 
-  # 入力された author_names / tag_names から関連を作成
-  before_validation -> { assign_names(:authors, author_names) }
-  before_validation -> { assign_names(:tags, tag_names) }
-
+  # =====================
+  # コールバック
+  # =====================
+  before_validation :build_authors_from_input
+  before_validation :build_tags_from_input
   after_save :adjust_book_items_stock, if: -> { stock_count.present? }
 
-  scope :search_by_title_or_author, lambda { |search_term|
-    return all if search_term.blank?
+  # =====================
+  # スコープ
+  # =====================
+  scope :search_by_title_or_author, lambda { |term|
+    return all if term.blank?
 
-    search_term = "%#{search_term}%"
+    pattern = "%#{term}%"
     joins(:authors)
-      .where('LOWER(books.title) LIKE LOWER(?) OR LOWER(authors.name) LIKE LOWER(?)',
-             search_term,
-             search_term)
+      .where('LOWER(books.title) LIKE LOWER(?) OR LOWER(authors.name) LIKE LOWER(?)', pattern, pattern)
       .distinct
   }
 
@@ -45,34 +52,50 @@ class Book < ApplicationRecord
     end
   }
 
+  # =====================
+  # インスタンスメソッド
+  # =====================
   def available?
-    book_items.any? && book_items.any? { |item| item.loans.currently_borrowed.empty? }
+    book_items.exists? && book_items.any? { |item| item.loans.currently_borrowed.empty? }
   end
 
   private
 
-  def assign_names(association, raw_names)
-    return if raw_names.blank?
-
-    names = normalize_names(raw_names)
-    public_send("#{association}=", names.map { |name| find_or_create_record(association, name) })
+  # ==================================================
+  # 著者・タグの入力値を関連に変換
+  # ==================================================
+  def build_authors_from_input
+    assign_association_from_input(:authors, author_names)
   end
 
-  # 入力を正規化
-  # - String の場合: カンマや改行で分割 → strip → 重複除去
-  # - Array の場合: strip → 重複除去
-  def normalize_names(names)
-    case names
+  def build_tags_from_input
+    assign_association_from_input(:tags, tag_names)
+  end
+
+  def assign_association_from_input(association, raw_input)
+    return if raw_input.blank?
+
+    names = normalize_names(raw_input)
+    records = names.map { |name| find_or_create_record(association, name) }
+
+    public_send("#{association}=", records)
+  end
+
+  # 文字列または配列で与えられた名前を整理する
+  # - 空白を除去し、重複をなくす
+  # - カンマまたは改行で分割
+  def normalize_names(input)
+    case input
     when String
-      names.split(/[,\n]/).map(&:strip).compact_blank.uniq
+      input.split(/[,\n]/).map(&:strip).compact_blank.uniq
     when Array
-      names.map(&:strip).compact_blank.uniq
+      input.map(&:strip).compact_blank.uniq
     else
       []
     end
   end
 
-  # Author や Tag を find_or_create
+  # 重複登録を避けて Author/Tag を取得または作成する
   def find_or_create_record(association, name)
     klass = association.to_s.singularize.classify.constantize
     klass.find_or_create_by!(name: name)
@@ -80,16 +103,25 @@ class Book < ApplicationRecord
     klass.find_by!(name: name)
   end
 
+  # ==================================================
+  # 在庫数に応じて BookItem を増減させる
+  # ==================================================
   def adjust_book_items_stock
     desired = stock_count.to_i
     current = book_items.count
 
     if desired > current
-      (desired - current).times { book_items.create! }
+      add_book_items(desired - current)
     elsif desired < current
-      # 未貸出のBookItemのみ削除
-      removable = book_items.where.missing(:loans).limit(current - desired)
-      removable.each(&:destroy)
+      remove_unborrowed_items(current - desired)
     end
+  end
+
+  def add_book_items(count)
+    count.times { book_items.create! }
+  end
+
+  def remove_unborrowed_items(count)
+    book_items.where.missing(:loans).limit(count).each(&:destroy)
   end
 end

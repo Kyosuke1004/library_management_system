@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'tags/autocomplete', to: 'tags#autocomplete'
   get 'users/index'
   root "books#index"
   devise_for :users
