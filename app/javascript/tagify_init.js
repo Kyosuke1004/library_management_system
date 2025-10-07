@@ -47,7 +47,12 @@ document.addEventListener("turbo:load", () => {
   if (tagInput) {
     const tagTagify = new Tagify(tagInput, {
       whitelist: [],
-      dropdown: { position: "input", enabled: 0 },
+      dropdown: {
+         maxItems: 20,
+        classname: "tags-look",
+        enabled: 0,
+        closeOnSelect: false
+      },
       originalInputValueFormat: (valuesArr) =>
         valuesArr.map((item) => item.value).join(", "),
     });

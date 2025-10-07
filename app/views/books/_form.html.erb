@@ -65,7 +65,7 @@
     <label class="label">タグ</label>
     <div class="no-bulma">
       <%= f.text_field :tag_names,
-      class: "no-bulma tagify--outside input",
+      class: "no-bulma tags-look input",
       id: "tag-input",
       name: "book[tag_names]",
       value: book.tags.map(&:name).join(', '),
