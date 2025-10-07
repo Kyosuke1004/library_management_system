@@ -6,9 +6,9 @@ class BooksController < ApplicationController
   def index
     if params[:tag_id].present?
       @tag = Tag.find(params[:tag_id])
-      @books = @tag.books.sort_by_param(params[:sort])
+      @books = @tag.books.sort_by_param(params[:sort]).page(params[:page]).per(12)
     else
-      @books = Book.search_by_title_or_author(params[:search]).sort_by_param(params[:sort])
+      @books = Book.search_by_title_or_author(params[:search]).sort_by_param(params[:sort]).page(params[:page]).per(12)
     end
   end
 
@@ -80,8 +80,6 @@ class BooksController < ApplicationController
 
     result = GoogleBooksService.fetch_by_isbn(isbn)
     Rails.logger.info("GoogleBooksService.fetch_by_isbnレスポンス: #{result.inspect}")
-    image_url = result&.dig(:image_url)
-    Rails.logger.info("image_url_from_isbnの戻り値: #{image_url}")
-    image_url
+    result&.dig(:image_url)
   end
 end

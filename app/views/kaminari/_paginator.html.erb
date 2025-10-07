@@ -1,0 +1,41 @@
+<%
+=begin
+
+The container tag
+- available local variables
+  current_page : a page object for the currently displayed page
+  total_pages  : total number of pages
+  per_page     : number of items to fetch per page
+  remote       : data-remote
+  paginator    : the paginator that renders the pagination tags inside
+
+=end
+%>
+<%= paginator.render do %>
+  <nav class="pagination is-centered" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <% unless current_page.first? %>
+        <%= link_to_unless current_page.first?, t('views.pagination.first').html_safe, url_for(page: 1), class: "pagination-link" %>
+      <% end %>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <%= prev_page_tag unless current_page.first? %>
+      <ul class="pagination-list">
+        <% each_page do |page| %>
+          <% if page.display_tag? %>
+            <%= page_tag page %>
+          <% elsif !page.was_truncated? %>
+            <%= gap_tag %>
+          <% end %>
+        <% end %>
+      </ul>
+      <%= next_page_tag unless current_page.last? %>
+    </div>
+    <div>
+      <% unless current_page.last? %>
+        <% total_pages = current_page.instance_variable_get(:@options)[:total_pages] %>
+        <%= link_to_unless current_page.last?, t('views.pagination.last').html_safe, url_for(page: total_pages), class: "pagination-link" %>
+      <% end %>
+    </div>
+  </nav>
+<% end %>
