@@ -13,33 +13,40 @@ document.addEventListener("turbo:load", () => {
     });
 
     let authorController = null;
-    function fetchAuthors(term = "") {
+    function fetchAuthors(term = "", showDropdown = false) {
       if (authorController) authorController.abort();
       authorController = new AbortController();
       authorTagify.loading(true);
-      fetch(`/authors/autocomplete?term=${encodeURIComponent(term)}`, {
+      const url = term ? `/authors/autocomplete?term=${encodeURIComponent(term)}` : `/authors/autocomplete`;
+      fetch(url, {
         credentials: "same-origin",
         signal: authorController.signal,
       })
         .then((r) => (r.ok ? r.json() : Promise.resolve([])))
         .then((data) => {
-          authorTagify.whitelist = Array.isArray(data) ? data : [];
+          // APIレスポンスが空でもwhitelistを空にしない
+          const apiValues = Array.isArray(data) ? data : [];
+          authorTagify.whitelist = apiValues.length > 0 ? apiValues : authorTagify.whitelist;
           authorTagify.loading(false);
-          if (term) authorTagify.dropdown.show(term);
+          if (showDropdown) authorTagify.dropdown.show(term);
         })
         .catch((err) => {
           authorTagify.loading(false);
-          authorTagify.whitelist = [];
+          // whitelistは前回のまま維持
           console.warn("authors autocomplete failed", err);
         });
     }
     authorTagify.on("input", (e) => {
-      fetchAuthors(e.detail.value || "");
+      fetchAuthors(e.detail.value || "", true);
+    });
+    authorInput.addEventListener("focus", () => {
+      fetchAuthors(authorInput.value || "", true);
     });
     authorTagify.on("change", () => {
       setupAuthorInputValidation();
     });
-    fetchAuthors();
+  // 初期化時は候補のみセット（ドロップダウンは表示しない）
+  fetchAuthors();
   }
 
   // タグ用Tagify初期化
@@ -58,28 +65,34 @@ document.addEventListener("turbo:load", () => {
     });
 
     let tagController = null;
-    function fetchTags(term = "") {
+    function fetchTags(term = "", showDropdown = false) {
       if (tagController) tagController.abort();
       tagController = new AbortController();
       tagTagify.loading(true);
-      fetch(`/tags/autocomplete?term=${encodeURIComponent(term)}`, {
+      const url = term ? `/tags/autocomplete?term=${encodeURIComponent(term)}` : `/tags/autocomplete`;
+      fetch(url, {
         credentials: "same-origin",
         signal: tagController.signal,
       })
         .then((r) => (r.ok ? r.json() : Promise.resolve([])))
         .then((data) => {
-          tagTagify.whitelist = Array.isArray(data) ? data : [];
+          // APIレスポンスが空でもwhitelistを空にしない
+          const apiValues = Array.isArray(data) ? data : [];
+          tagTagify.whitelist = apiValues.length > 0 ? apiValues : tagTagify.whitelist;
           tagTagify.loading(false);
-          if (term) tagTagify.dropdown.show(term);
+          if (showDropdown) tagTagify.dropdown.show(term);
         })
         .catch((err) => {
           tagTagify.loading(false);
-          tagTagify.whitelist = [];
+          // whitelistは前回のまま維持
           console.warn("tags autocomplete failed", err);
         });
     }
     tagTagify.on("input", (e) => {
-      fetchTags(e.detail.value || "");
+      fetchTags(e.detail.value || "", true);
+    });
+    tagInput.addEventListener("focus", () => {
+      fetchTags(tagInput.value || "", true);
     });
     // タグ用バリデーション関数（必要に応じてbook_form_validation.jsで定義）
     tagTagify.on("change", () => {
@@ -87,6 +100,7 @@ document.addEventListener("turbo:load", () => {
         setupTagInputValidation();
       }
     });
-    fetchTags();
+  // 初期化時は候補のみセット（ドロップダウンは表示しない）
+  fetchTags();
   }
 });
