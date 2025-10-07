@@ -1,5 +1,5 @@
 import Tagify from "tagify";
-import { setupAuthorInputValidation } from "./book_form_validation";
+import { setupAuthorInputValidation } from "book_form_validation";
 
 document.addEventListener("turbo:load", () => {
   // 著者用Tagify初期化
