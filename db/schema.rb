@@ -15,9 +15,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_03_045901) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "name_kana"
-    t.index ["name"], name: "index_authors_on_name", unique: true
-    t.index ["name_kana"], name: "index_authors_on_name_kana"
   end
 
   create_table "authorships", force: :cascade do |t|
@@ -25,9 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_03_045901) do
     t.integer "author_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "position", default: 0, null: false
     t.index ["author_id"], name: "index_authorships_on_author_id"
-    t.index ["book_id", "position"], name: "index_authorships_on_book_id_and_position"
     t.index ["book_id"], name: "index_authorships_on_book_id"
   end
 
@@ -46,7 +41,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_03_045901) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "image_url"
-    t.index ["isbn"], name: "index_books_on_isbn", unique: true
   end
 
   create_table "loans", force: :cascade do |t|
@@ -73,7 +67,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_03_045901) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "color", limit: 7
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 

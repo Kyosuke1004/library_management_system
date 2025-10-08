@@ -5,6 +5,8 @@ erDiagram
     book_items ||--o{ loans : "book_items.id = loans.book_item_id"
     books ||--|{ authorships : "books.id = authorships.book_id"
     authors ||--|{ authorships : "authors.id = authorships.author_id"
+    books ||--o{ taggings : "books.id = taggings.book_id"
+    tags ||--o{ taggings : "tags.id = taggings.tag_id"
 
     users {
         int id PK
@@ -13,6 +15,9 @@ erDiagram
         int role
         datetime created_at
         datetime updated_at
+        string reset_password_token
+        datetime reset_password_sent_at
+        datetime remember_created_at
     }
 
     books {
@@ -21,6 +26,7 @@ erDiagram
         string isbn
         int published_year
         string publisher
+        string image_url
         datetime created_at
         datetime updated_at
     }
@@ -53,6 +59,21 @@ erDiagram
         int id PK
         int book_id FK "→ books.id"
         int author_id FK "→ authors.id"
+        datetime created_at
+        datetime updated_at
+    }
+
+    tags {
+        int id PK
+        string name
+        datetime created_at
+        datetime updated_at
+    }
+
+    taggings {
+        int id PK
+        int book_id FK "→ books.id"
+        int tag_id FK "→ tags.id"
         datetime created_at
         datetime updated_at
     }
